@@ -1,0 +1,269 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if current_view == 'shop' %}Shop | LIYAURA{% elif current_view == 'products' %}{{ category_two.name }} | LIYAURA{% elif current_view == 'occasion' %}{{ category_one.name }} | LIYAURA{% else %}Collections | LIYAURA{% endif %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/liyaura.css' %}">
+</head>
+<body class="user-theme">
+{% include "_navbar.html" %}
+{% include "_flash.html" %}
+
+<header class="page-hero">
+    <div class="container">
+        <nav class="breadcrumb-bar">
+            <a href="{% url 'user_landing' %}">Home</a><span class="sep">/</span>
+            {% if current_view == 'shop' %}
+            <span class="active">Shop</span>
+            {% elif current_view == 'occasion' %}
+            <span class="active">{{ category_one.name }}</span>
+            {% elif current_view == 'category_one' %}
+            <span class="active">{% if gender_type == "bride" %}Bride{% else %}Groom{% endif %}</span>
+            {% elif current_view == 'category_two' %}
+            <a href="{% url 'user_category_one' gender_type %}">{% if gender_type == "bride" %}Bride{% else %}Groom{% endif %}</a><span class="sep">/</span>
+            <span class="active">{{ category_one.name }}</span>
+            {% elif current_view == 'products' %}
+            <a href="{% url 'user_category_one' gender_type %}">{% if gender_type == "bride" %}Bride{% else %}Groom{% endif %}</a><span class="sep">/</span>
+            <a href="{% url 'user_category_two' gender_type category_one.id %}">{{ category_one.name }}</a><span class="sep">/</span>
+            <span class="active">{{ category_two.name }}</span>
+            {% endif %}
+        </nav>
+        {% if current_view == 'shop' %}
+        <p class="eyebrow">LIYAURA Collections</p>
+        <h1>Shop the <i class="gold">Collection</i></h1>
+        <p>Search bridal and groom couture by garment, occasion or price.</p>
+{% elif current_view == 'occasion' %}
+        <div class="occasion-choice">
+            <a class="choice-card reveal" href="{% url 'user_category_two' 'bride' category_one.id %}">
+                <div class="choice-media"><img src="{% static 'images/bride-vertical.png' %}" alt="Bride edit" loading="lazy"></div>
+                <div class="choice-body">
+                    <p class="cc-kicker">The Bride Edit</p>
+                    <h3>Bride</h3>
+                    <span>{{ bride_count }} subcategories <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </a>
+            <a class="choice-card reveal" href="{% url 'user_category_two' 'groom' category_one.id %}">
+                <div class="choice-media"><img src="{% static 'images/groom-vertical.png' %}" alt="Groom edit" loading="lazy"></div>
+                <div class="choice-body">
+                    <p class="cc-kicker">The Groom Edit</p>
+                    <h3>Groom</h3>
+                    <span>{{ groom_count }} subcategories <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </a>
+        </div>
+
+        {% elif current_view == 'category_one' %}
+        <p class="eyebrow">{% if gender_type == "bride" %}The Bride Edit{% else %}The Groom Edit{% endif %}</p>
+        <h1>{% if gender_type == "bride" %}Bride{% else %}Groom{% endif %} <i class="gold">Collections</i></h1>
+        <p>Every celebration has its own moment. Choose the occasion to begin.</p>
+        {% elif current_view == 'category_two' %}
+        <p class="eyebrow">{{ category_one.name }}</p>
+        <h1>{{ category_one.name }} <i class="gold">Subcategories</i></h1>
+        <p>Refine by silhouette to find your perfect rental.</p>
+        {% elif current_view == 'products' %}
+        <p class="eyebrow">{{ category_one.name }}</p>
+        <h1>{{ category_two.name }} <i class="gold">Rentals</i></h1>
+        <p>Hand-picked pieces for {{ category_one.name }} celebrations.</p>
+        {% endif %}
+    </div>
+</header>
+
+<section class="section">
+    <div class="container">
+        {% if current_view == 'shop' %}
+        <!-- ===== SHOP: search + filters + grid ===== -->
+        <div class="shop-layout">
+            <aside class="filter-panel">
+                <div class="filter-card">
+                    <h4>Refine</h4>
+                    <form method="GET" action="{% url 'user_shop' %}" id="filterForm">
+                        <div class="filter-group">
+                            <input type="search" class="search-input" name="q" value="{{ filters.q }}" placeholder="Search lehengas, sherwanis, sarees&hellip;">
+                        </div>
+                        <div class="filter-group">
+                            <p class="fg-label">Bride / Groom</p>
+                            <label><input type="radio" name="gender" value="" onchange="this.form.submit()" {% if not filters.gender %}checked{% endif %}> All</label>
+                            <label><input type="radio" name="gender" value="bride" onchange="this.form.submit()" {% if filters.gender == 'bride' %}checked{% endif %}> Bride</label>
+                            <label><input type="radio" name="gender" value="groom" onchange="this.form.submit()" {% if filters.gender == 'groom' %}checked{% endif %}> Groom</label>
+                        </div>
+                        <div class="filter-group">
+                            <p class="fg-label">Occasion</p>
+                            <select class="form-select" name="occasion" onchange="this.form.submit()">
+                                <option value="">All Occasions</option>
+                                {% for oc in occasions_all %}
+                                <option value="{{ oc.id }}" {% if filters.occasion == oc.id|stringformat:"s" %}selected{% endif %}>{{ oc.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <p class="fg-label">Category</p>
+                            <select class="form-select" name="category" onchange="this.form.submit()">
+                                <option value="">All Categories</option>
+                                <option value="lehenga" {% if filters.category == 'lehenga' %}selected{% endif %}>Lehenga</option>
+                                <option value="saree" {% if filters.category == 'saree' %}selected{% endif %}>Saree</option>
+                                <option value="gown" {% if filters.category == 'gown' %}selected{% endif %}>Gown</option>
+                                <option value="sherwani" {% if filters.category == 'sherwani' %}selected{% endif %}>Sherwani</option>
+                                <option value="suit" {% if filters.category == 'suit' %}selected{% endif %}>Suit</option>
+                                <option value="tuxedo" {% if filters.category == 'tuxedo' %}selected{% endif %}>Tuxedo</option>
+                                <option value="kurta" {% if filters.category == 'kurta' %}selected{% endif %}>Kurta Set</option>
+                                <option value="anarkali" {% if filters.category == 'anarkali' %}selected{% endif %}>Anarkali</option>
+                                <option value="sharara" {% if filters.category == 'sharara' %}selected{% endif %}>Sharara</option>
+                                <option value="indo" {% if filters.category == 'indo' %}selected{% endif %}>Indo-Western</option>
+                                <option value="kaftan" {% if filters.category == 'kaftan' %}selected{% endif %}>Kaftan</option>
+                                <option value="dhoti" {% if filters.category == 'dhoti' %}selected{% endif %}>Dhoti Kurta</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <p class="fg-label">Price (per day)</p>
+                            <select class="form-select" name="price" onchange="this.form.submit()">
+                                <option value="">Any Price</option>
+                                <option value="under-2000" {% if filters.price == 'under-2000' %}selected{% endif %}>Under &#8377;2,000</option>
+                                <option value="2000-4000" {% if filters.price == '2000-4000' %}selected{% endif %}>&#8377;2,000 &ndash; &#8377;4,000</option>
+                                <option value="4000-8000" {% if filters.price == '4000-8000' %}selected{% endif %}>&#8377;4,000 &ndash; &#8377;8,000</option>
+                                <option value="8000-plus" {% if filters.price == '8000-plus' %}selected{% endif %}>&#8377;8,000+</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label style="font-weight:600;"><input type="checkbox" name="availability" value="available" onchange="this.form.submit()" {% if filters.availability == 'available' %}checked{% endif %}> Available now</label>
+                        </div>
+                        <input type="hidden" name="sort" value="{{ filters.sort }}">
+                    </form>
+                </div>
+                <div class="filter-card">
+                    <h4>Quick Search</h4>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="active-filter" href="{% url 'user_shop' %}?q=Lehenga">Lehenga</a>
+                        <a class="active-filter" href="{% url 'user_shop' %}?q=Sherwani">Sherwani</a>
+                        <a class="active-filter" href="{% url 'user_shop' %}?q=Saree">Saree</a>
+                        <a class="active-filter" href="{% url 'user_shop' %}?q=Gown">Gown</a>
+                        <a class="active-filter" href="{% url 'user_shop' %}?q=Tuxedo">Tuxedo</a>
+                        <a class="active-filter" href="{% url 'user_shop' %}?q=Kurta">Kurta</a>
+                        <a class="active-filter" href="{% url 'user_shop' %}?q=Engagement">Engagement</a>
+                        <a class="active-filter" href="{% url 'user_shop' %}?q=Reception">Reception</a>
+                        <a class="active-filter" href="{% url 'user_shop' %}?q=Haldi">Haldi</a>
+                        <a class="active-filter" href="{% url 'user_shop' %}?q=Mehendi">Mehendi</a>
+                    </div>
+                </div>
+            </aside>
+
+            <div>
+                <div class="shop-toolbar">
+                    <span class="result-count"><b>{{ products.count }}</b> looks found</span>
+                    <div class="d-flex gap-2 align-items-center">
+                        {% if filters.q or filters.gender or filters.occasion or filters.category or filters.price or filters.availability %}
+                        <a class="active-filter" href="{% url 'user_shop' %}">Clear all <i class="fa-solid fa-xmark"></i></a>
+                        {% endif %}
+                        <select class="form-select sort-select" name="sort" form="filterForm" onchange="this.form.submit()">
+                            <option value="recommended" {% if filters.sort == 'recommended' %}selected{% endif %}>Recommended</option>
+                            <option value="newest" {% if filters.sort == 'newest' %}selected{% endif %}>Newest</option>
+                            <option value="price-asc" {% if filters.sort == 'price-asc' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price-desc" {% if filters.sort == 'price-desc' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="popular" {% if filters.sort == 'popular' %}selected{% endif %}>Most Popular</option>
+                        </select>
+                    </div>
+                </div>
+                {% if products %}
+                {% if bride_products or groom_products %}
+                    {% if bride_products %}
+                    <div class="shop-section">
+                        <div class="shop-section-head">
+                            <h2>The <i>Bride</i> Edit</h2>
+                            <a href="{% url 'user_shop' %}?gender=bride">View All <i class="fa-solid fa-arrow-right-long"></i></a>
+                        </div>
+                        <div class="product-grid">
+                            {% for product in bride_products %}
+                            {% include "_product_card.html" with product=product %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if groom_products %}
+                    <div class="shop-section">
+                        <div class="shop-section-head">
+                            <h2>The <i>Groom</i> Edit</h2>
+                            <a href="{% url 'user_shop' %}?gender=groom">View All <i class="fa-solid fa-arrow-right-long"></i></a>
+                        </div>
+                        <div class="product-grid">
+                            {% for product in groom_products %}
+                            {% include "_product_card.html" with product=product %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                {% else %}
+                <div class="product-grid">
+                    {% for product in products %}
+                    {% include "_product_card.html" with product=product %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="fa-regular fa-magnifying-glass es-icon"></i>
+                    <h3>No looks found</h3>
+                    <p>Try adjusting your filters or search for a different garment.</p>
+                    <a href="{% url 'user_shop' %}" class="btn btn-gold">Reset Filters</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% elif current_view == 'category_one' %}
+        <div class="browse-grid">
+            {% for cat in categories %}
+            <a class="browse-card reveal" href="{% url 'user_category_two' gender_type cat.id %}">
+                {% if cat.image %}<img src="{{ cat.image }}" alt="{{ cat.name }}" loading="lazy">{% endif %}
+                <div class="bc-body">
+                    <h3>{{ cat.name }}</h3>
+                    <span>Explore <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </a>
+            {% empty %}
+            <div class="empty-state"><p>No collections available yet.</p></div>
+            {% endfor %}
+        </div>
+
+        {% elif current_view == 'category_two' %}
+        <div class="browse-grid">
+            {% for sub in subcategories %}
+            <a class="browse-card reveal" href="{% url 'user_products' gender_type category_one.id sub.id %}">
+                {% if sub.image %}<img src="{{ sub.image }}" alt="{{ sub.name }}" loading="lazy">{% endif %}
+                <div class="bc-body">
+                    <h3>{{ sub.name }}</h3>
+                    <span>View Rentals <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </a>
+            {% empty %}
+            <div class="empty-state"><p>No subcategories available yet.</p></div>
+            {% endfor %}
+        </div>
+
+        {% elif current_view == 'products' %}
+        <div class="shop-toolbar">
+            <span class="result-count"><b>{{ products.count }}</b> looks found</span>
+        </div>
+        <div class="product-grid">
+            {% for product in products %}
+            {% include "_product_card.html" with product=product %}
+            {% empty %}
+            <div class="empty-state">
+                <i class="fa-regular fa-shirt es-icon"></i>
+                <h3>No rentals yet</h3>
+                <p>New looks for this category are being added.</p>
+                <a href="{% url 'user_shop' %}" class="btn btn-gold">Shop All</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% include "_footer.html" %}
+<script src="{% static 'js/browse.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

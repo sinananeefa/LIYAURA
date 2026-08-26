@@ -1,0 +1,1505 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIYAURA &middot; Owner Command Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- ==========================================
+             SIDEBAR (Collapsible & Responsive)
+             ========================================== -->
+        <aside class="sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <div class="brand-badge">
+                    <div class="brand-monogram">L</div>
+                    <div class="brand-details">
+                        <span class="brand-title">LIYAURA</span>
+                        <span class="brand-subtitle">Owner Suite</span>
+                    </div>
+                </div>
+                <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Toggle Sidebar">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Operations</div>
+                <div class="nav-item active" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span class="nav-label">Dashboard</span>
+                </div>
+                <div class="nav-item" data-tab="products">
+                    <i class="fa-solid fa-vest-patches"></i>
+                    <span class="nav-label">Products</span>
+                    <span class="nav-badge gold">{{ total_products }}</span>
+                </div>
+                <div class="nav-item" data-tab="categories">
+                    <i class="fa-solid fa-tags"></i>
+                    <span class="nav-label">Categories</span>
+                </div>
+                <div class="nav-item" data-tab="occasions">
+                    <i class="fa-solid fa-champagne-glasses"></i>
+                    <span class="nav-label">Occasions</span>
+                </div>
+                <div class="nav-item" data-tab="sections">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    <span class="nav-label">Racks & Sections</span>
+                </div>
+
+                <div class="nav-section-title">Rentals & Orders</div>
+                <div class="nav-item" data-tab="bookings">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span class="nav-label">Bookings</span>
+                    {% if upcoming_bookings %}<span class="nav-badge">{{ upcoming_bookings }} new</span>{% endif %}
+                </div>
+                <div class="nav-item" data-tab="rentals">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span class="nav-label">Active Rentals</span>
+                    <span class="nav-badge gold">{{ active_rentals }}</span>
+                </div>
+
+                <div class="nav-section-title">Customers & Sales</div>
+                <div class="nav-item" data-tab="customers">
+                    <i class="fa-solid fa-users"></i>
+                    <span class="nav-label">Customers</span>
+                </div>
+                <div class="nav-item" data-tab="reviews">
+                    <i class="fa-solid fa-star"></i>
+                    <span class="nav-label">Reviews</span>
+                </div>
+                <div class="nav-item" data-tab="offers">
+                    <i class="fa-solid fa-ticket"></i>
+                    <span class="nav-label">Offers & Promo</span>
+                </div>
+                <div class="nav-item" data-tab="payments">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span class="nav-label">Payments</span>
+                </div>
+
+                <div class="nav-section-title">Intelligence</div>
+                <div class="nav-item" data-tab="analytics">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span class="nav-label">Analytics</span>
+                </div>
+                <div class="nav-item" data-tab="settings">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span class="nav-label">Settings</span>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="owner-pill">
+                    <div class="owner-avatar">{{ owner_username|slice:":1"|upper }}</div>
+                    <div class="owner-info">
+                        <span class="owner-name">{{ owner_username }}</span>
+                        <span class="owner-role">Executive Admin</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ==========================================
+             MAIN CONTENT WRAPPER
+             ========================================== -->
+        <main class="main-wrapper">
+            <!-- Top App Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button type="button" class="sidebar-toggle-btn" id="mobileMenuBtn" style="display:none;">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="globalSearchInput" placeholder="Search products, bookings, customers...">
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <a href="{% url 'user_landing' %}" target="_blank" class="btn-secondary-luxury" title="Open Customer Website">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <span>Live Store</span>
+                    </a>
+
+                    <button type="button" class="btn-primary-luxury" onclick="openAddProductDrawer()">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Outfit</span>
+                    </button>
+
+                    <button type="button" class="action-btn-circle" id="themeToggleBtn" title="Toggle Theme">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+
+                    <button type="button" class="action-btn-circle" id="notificationBtn" title="Notifications">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-indicator"></span>
+                    </button>
+
+                    <a href="{% url 'owner_logout' %}" class="action-btn-circle" title="Sign Out" style="color:#C62828;">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </a>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <!-- ==========================================
+                     TAB 1: EXECUTIVE DASHBOARD OVERVIEW
+                     ========================================== -->
+                <section class="tab-panel active" id="tab-dashboard">
+                    <div class="dashboard-hero">
+                        <div>
+                            <h1 class="hero-greeting">Good day, {{ owner_username }}</h1>
+                            <p class="hero-subtitle">Here is your LIYAURA luxury business command overview.</p>
+                        </div>
+                        <div class="date-pill">
+                            <i class="fa-regular fa-calendar"></i>
+                            <span>{{ today_date }}</span>
+                        </div>
+                    </div>
+
+                    <!-- 6 Staggered Stat Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon-wrap"><i class="fa-solid fa-vest-patches"></i></div>
+                                <span class="stat-trend positive"><i class="fa-solid fa-arrow-up"></i> +8.2%</span>
+                            </div>
+                            <div class="stat-value" data-count="{{ total_products }}">{{ total_products }}</div>
+                            <div class="stat-label">Total Outfits</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon-wrap"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                                <span class="stat-trend positive"><i class="fa-solid fa-arrow-up"></i> +14.5%</span>
+                            </div>
+                            <div class="stat-value" data-count="{{ active_rentals }}">{{ active_rentals }}</div>
+                            <div class="stat-label">Active Rentals</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon-wrap"><i class="fa-solid fa-calendar-check"></i></div>
+                                <span class="stat-trend positive"><i class="fa-solid fa-arrow-up"></i> +18%</span>
+                            </div>
+                            <div class="stat-value" data-count="{{ upcoming_bookings }}">{{ upcoming_bookings }}</div>
+                            <div class="stat-label">Upcoming Bookings</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon-wrap"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                                <span class="stat-trend positive"><i class="fa-solid fa-arrow-up"></i> +22.4%</span>
+                            </div>
+                            <div class="stat-value" data-prefix="₹" data-count="{{ monthly_revenue|default:248500 }}">₹{{ monthly_revenue }}</div>
+                            <div class="stat-label">Monthly Revenue</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon-wrap"><i class="fa-solid fa-rotate-left"></i></div>
+                                <span class="stat-trend warning"><i class="fa-solid fa-triangle-exclamation"></i> Action</span>
+                            </div>
+                            <div class="stat-value" data-count="{{ pending_returns }}">{{ pending_returns }}</div>
+                            <div class="stat-label">Pending Returns</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon-wrap"><i class="fa-solid fa-users"></i></div>
+                                <span class="stat-trend positive"><i class="fa-solid fa-arrow-up"></i> +9.1%</span>
+                            </div>
+                            <div class="stat-value" data-count="{{ total_customers }}">{{ total_customers }}</div>
+                            <div class="stat-label">Total Customers</div>
+                        </div>
+                    </div>
+
+                    <!-- Revenue Analytics Chart & Quick Actions -->
+                    <div class="dashboard-middle-grid">
+                        <div class="card-luxury">
+                            <div class="card-header-flex">
+                                <div>
+                                    <h2 class="card-heading">Revenue Overview</h2>
+                                    <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Rental revenue trends and seasonal order volume</p>
+                                </div>
+                                <div class="chart-period-pills">
+                                    <span class="period-pill" data-period="7d">7 Days</span>
+                                    <span class="period-pill active" data-period="30d">30 Days</span>
+                                    <span class="period-pill" data-period="3m">3 Months</span>
+                                    <span class="period-pill" data-period="6m">6 Months</span>
+                                    <span class="period-pill" data-period="1y">1 Year</span>
+                                </div>
+                            </div>
+                            <div class="chart-canvas-container">
+                                <canvas id="revenueChartCanvas"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card-luxury">
+                            <div class="card-header-flex">
+                                <h2 class="card-heading">Quick Actions</h2>
+                            </div>
+                            <div class="quick-actions-grid">
+                                <div class="qa-card-btn" onclick="openAddProductDrawer()">
+                                    <i class="fa-solid fa-plus"></i>
+                                    <span>Add New Product</span>
+                                </div>
+                                <div class="qa-card-btn" data-action-tab="occasions">
+                                    <i class="fa-solid fa-champagne-glasses"></i>
+                                    <span>Manage Occasions</span>
+                                </div>
+                                <div class="qa-card-btn" data-action-tab="categories">
+                                    <i class="fa-solid fa-tags"></i>
+                                    <span>Manage Categories</span>
+                                </div>
+                                <div class="qa-card-btn" data-action-tab="offers">
+                                    <i class="fa-solid fa-ticket"></i>
+                                    <span>Create Promo Offer</span>
+                                </div>
+                                <div class="qa-card-btn" data-action-tab="bookings">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                    <span>View All Bookings</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Bookings Table & Upcoming Returns -->
+                    <div style="display:grid; grid-template-columns: 2fr 1.1fr; gap:24px;">
+                        <div class="card-luxury">
+                            <div class="card-header-flex">
+                                <h2 class="card-heading">Recent Rental Bookings</h2>
+                                <button type="button" class="btn-secondary-luxury" data-action-tab="bookings">View All</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="luxury-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Booking</th>
+                                            <th>Customer</th>
+                                            <th>Outfit</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for b in recent_bookings %}
+                                        <tr class="searchable-row" style="cursor:pointer;" onclick="openBookingDrawer({{ b.id }})">
+                                            <td style="font-weight:700; color:var(--gold-primary);">#{{ b.id }}</td>
+                                            <td>{{ b.user.username }}</td>
+                                            <td>
+                                                <div class="table-product-cell">
+                                                    <img src="{{ b.product.image_1|default:'/static/images/hero-couple.jpg' }}" class="table-product-thumb" alt="">
+                                                    <span style="font-weight:600;">{{ b.product.name }}</span>
+                                                </div>
+                                            </td>
+                                            <td style="font-weight:600;">₹{{ b.total_price }}</td>
+                                            <td>
+                                                <span class="status-badge badge-{{ b.status }}" id="booking-badge-{{ b.id }}">{{ b.status|title }}</span>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No recent bookings found.</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-luxury">
+                            <div class="card-header-flex">
+                                <h2 class="card-heading">Upcoming Returns</h2>
+                                <span class="nav-badge gold">{{ upcoming_returns_list|length }} Pending</span>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:12px;">
+                                {% for r in upcoming_returns_list %}
+                                <div style="display:flex; align-items:center; gap:12px; padding:12px; border-radius:12px; background:var(--bg-subtle);">
+                                    <img src="{{ r.booking.product.image_1|default:'/static/images/hero-couple.jpg' }}" style="width:44px; height:54px; border-radius:8px; object-fit:cover;">
+                                    <div style="flex:1;">
+                                        <div style="font-weight:600; font-size:13px; color:var(--text-dark);">{{ r.booking.product.name }}</div>
+                                        <div style="font-size:11.5px; color:var(--text-muted);">{{ r.booking.user.username }} &middot; {{ r.end_date|date:"d M" }}</div>
+                                    </div>
+                                    <span class="status-badge {{ r.badge_class }}">{{ r.return_badge }}</span>
+                                </div>
+                                {% empty %}
+                                <p style="color:var(--text-muted); font-size:13px; text-align:center; padding:20px 0;">All rented outfits returned on schedule!</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 2: PRODUCT MANAGEMENT & GEMINI AI
+                     ========================================== -->
+                <section class="tab-panel" id="tab-products">
+                    <div class="card-luxury">
+                        <div class="card-header-flex">
+                            <div>
+                                <h2 class="card-heading">Product Catalog ({{ total_products }})</h2>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Manage bridal couture, groom sherwanis, prices, and high-fashion assets</p>
+                            </div>
+                            <button type="button" class="btn-primary-luxury" onclick="openAddProductDrawer()">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Add New Outfit</span>
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="luxury-table">
+                                <thead>
+                                    <tr>
+                                        <th>Outfit</th>
+                                        <th>Gender / Category</th>
+                                        <th>Occasion</th>
+                                        <th>Rental Rate</th>
+                                        <th>Orig. Price</th>
+                                        <th>Stock</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in products %}
+                                    <tr class="searchable-row" id="product-row-{{ p.id }}">
+                                        <td>
+                                            <div class="table-product-cell">
+                                                <img src="{{ p.image_1 }}" class="table-product-thumb" alt="">
+                                                <div>
+                                                    <div style="font-weight:600; color:var(--text-dark);">{{ p.name }}</div>
+                                                    <small style="color:var(--text-muted);">ID: #{{ p.id }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span style="text-transform:capitalize; font-weight:600;">{{ p.category_2.gender_type }}</span>
+                                            <div style="font-size:12px; color:var(--text-muted);">{{ p.category_2.name }}</div>
+                                        </td>
+                                        <td>{{ p.category_1.name }}</td>
+                                        <td style="font-weight:700; color:var(--gold-primary);">₹{{ p.offer_price }} <small>/day</small></td>
+                                        <td style="text-decoration:line-through; color:var(--text-muted);">₹{{ p.actual_price }}</td>
+                                        <td>
+                                            {% if p.quantity > 0 %}
+                                            <span class="status-badge badge-success">{{ p.quantity }} Available</span>
+                                            {% else %}
+                                            <span class="status-badge badge-danger">Out of Stock</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div style="display:flex; gap:8px;">
+                                                <button type="button" class="action-btn-circle" style="width:32px; height:32px;" title="Edit" onclick="openEditProductDrawer({ id: {{ p.id }}, name: '{{ p.name|escapejs }}', actual_price: '{{ p.actual_price }}', offer_price: '{{ p.offer_price }}', quantity: {{ p.quantity }}, description: '{{ p.description|escapejs }}', category_1_id: {{ p.category_1.id }}, category_2_id: {{ p.category_2.id }}, section_id: {{ p.section.id|default:'null' }} })">
+                                                    <i class="fa-regular fa-pen-to-square" style="font-size:12px;"></i>
+                                                </button>
+                                                <a href="{% url 'product_duplicate' p.id %}" class="action-btn-circle" style="width:32px; height:32px;" title="Duplicate">
+                                                    <i class="fa-regular fa-copy" style="font-size:12px;"></i>
+                                                </a>
+                                                <a href="{% url 'product_delete' p.id %}" class="action-btn-circle" style="width:32px; height:32px; color:#C62828;" title="Delete" onclick="return confirm('Delete this product permanently?');">
+                                                    <i class="fa-regular fa-trash-can" style="font-size:12px;"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 3: CATEGORIES
+                     ========================================== -->
+                <section class="tab-panel" id="tab-categories">
+                    <div class="card-luxury" style="margin-bottom:24px;">
+                        <div class="card-header-flex">
+                            <div>
+                                <h2 class="card-heading">Add New Category</h2>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Define garment categories for brides or grooms</p>
+                            </div>
+                        </div>
+                        <form action="{% url 'category_two_add' %}" method="POST" enctype="multipart/form-data" style="display:grid; grid-template-columns: 1.5fr 1fr 1fr 1fr auto; gap:16px; align-items:flex-end;">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="form-label">Category Name</label>
+                                <input type="text" name="name" class="form-control" placeholder="e.g. Silk Zari Sharara" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Occasion Parent</label>
+                                <select name="category_1" class="form-control" required>
+                                    {% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Gender Segment</label>
+                                <select name="gender_type" class="form-control">
+                                    <option value="bride">Bride Couture</option>
+                                    <option value="groom">Groom Wardrobe</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Thumbnail Image</label>
+                                <input type="file" name="image" class="form-control">
+                            </div>
+                            <button type="submit" class="btn-primary-luxury">Save Category</button>
+                        </form>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
+                        <!-- Bride Categories -->
+                        <div class="card-luxury">
+                            <div class="card-header-flex">
+                                <h3 class="card-heading"><i class="fa-solid fa-person-dress" style="color:var(--gold-primary); margin-right:8px;"></i> Bride Categories ({{ bride_categories.count }})</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="luxury-table">
+                                    <thead><tr><th style="width:54px;">Image</th><th>Category</th><th>Occasion Parent</th><th style="text-align:right; width:85px;">Action</th></tr></thead>
+                                    <tbody>
+                                        {% for c in bride_categories %}
+                                        <tr>
+                                            <td>
+                                                <img src="{% if c.image %}{{ c.image }}{% else %}/static/images/bride-vertical.png{% endif %}" class="table-cat-thumb" alt="{{ c.name }}">
+                                            </td>
+                                            <td style="font-weight:600; color:var(--text-dark);">{{ c.name }}</td>
+                                            <td><span class="status-badge" style="background:var(--bg-subtle); color:var(--text-dark); font-size:11.5px;">{{ c.category_1.name }}</span></td>
+                                            <td>
+                                                <div style="display:flex; gap:6px; justify-content:flex-end;">
+                                                    <button type="button" class="action-btn-circle" style="width:30px; height:30px;" title="Edit Category" onclick="openEditCategoryDrawer({ id: {{ c.id }}, name: '{{ c.name|escapejs }}', category_1_id: {{ c.category_1.id }}, gender_type: '{{ c.gender_type }}', image: '{% if c.image %}{{ c.image }}{% else %}/static/images/bride-vertical.png{% endif %}' })">
+                                                        <i class="fa-regular fa-pen-to-square" style="font-size:11px;"></i>
+                                                    </button>
+                                                    <a href="{% url 'category_two_delete' c.id %}" class="action-btn-circle" style="width:30px; height:30px; color:#C62828;" title="Delete" onclick="return confirm('Delete category {{ c.name|escapejs }}?');">
+                                                        <i class="fa-regular fa-trash-can" style="font-size:11px;"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Groom Categories -->
+                        <div class="card-luxury">
+                            <div class="card-header-flex">
+                                <h3 class="card-heading"><i class="fa-solid fa-person" style="color:var(--gold-primary); margin-right:8px;"></i> Groom Categories ({{ groom_categories.count }})</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="luxury-table">
+                                    <thead><tr><th style="width:54px;">Image</th><th>Category</th><th>Occasion Parent</th><th style="text-align:right; width:85px;">Action</th></tr></thead>
+                                    <tbody>
+                                        {% for c in groom_categories %}
+                                        <tr>
+                                            <td>
+                                                <img src="{% if c.image %}{{ c.image }}{% else %}/static/images/hero-couple.jpg{% endif %}" class="table-cat-thumb" alt="{{ c.name }}">
+                                            </td>
+                                            <td style="font-weight:600; color:var(--text-dark);">{{ c.name }}</td>
+                                            <td><span class="status-badge" style="background:var(--bg-subtle); color:var(--text-dark); font-size:11.5px;">{{ c.category_1.name }}</span></td>
+                                            <td>
+                                                <div style="display:flex; gap:6px; justify-content:flex-end;">
+                                                    <button type="button" class="action-btn-circle" style="width:30px; height:30px;" title="Edit Category" onclick="openEditCategoryDrawer({ id: {{ c.id }}, name: '{{ c.name|escapejs }}', category_1_id: {{ c.category_1.id }}, gender_type: '{{ c.gender_type }}', image: '{% if c.image %}{{ c.image }}{% else %}/static/images/hero-couple.jpg{% endif %}' })">
+                                                        <i class="fa-regular fa-pen-to-square" style="font-size:11px;"></i>
+                                                    </button>
+                                                    <a href="{% url 'category_two_delete' c.id %}" class="action-btn-circle" style="width:30px; height:30px; color:#C62828;" title="Delete" onclick="return confirm('Delete category {{ c.name|escapejs }}?');">
+                                                        <i class="fa-regular fa-trash-can" style="font-size:11px;"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 4: OCCASIONS
+                     ========================================== -->
+                <section class="tab-panel" id="tab-occasions">
+                    <div class="card-luxury" style="margin-bottom:24px;">
+                        <div class="card-header-flex">
+                            <h2 class="card-heading">Wedding Occasions ({{ occasions_list|length }})</h2>
+                        </div>
+                        <form action="{% url 'category_one_add' %}" method="POST" enctype="multipart/form-data" style="display:grid; grid-template-columns: 2fr 1fr 1fr auto; gap:16px; align-items:flex-end;">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="form-label">Occasion Title</label>
+                                <input type="text" name="name" class="form-control" placeholder="e.g. Sangeet Celebration" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Gender Focus</label>
+                                <select name="gender_type" class="form-control">
+                                    <option value="bride">Bride / Couple</option>
+                                    <option value="groom">Groom Focus</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hero Cover Image</label>
+                                <input type="file" name="image" class="form-control">
+                            </div>
+                            <button type="submit" class="btn-primary-luxury">Add Occasion</button>
+                        </form>
+                    </div>
+
+                    <div class="cards-grid-responsive">
+                        {% for item in occasions_list %}
+                        <div class="occasion-admin-card searchable-card">
+                            <div class="occasion-admin-media">
+                                <img src="{{ item.sample_img }}" alt="{{ item.occasion.name }}">
+                                <span class="status-badge badge-gold" style="position:absolute; top:12px; right:12px;">{{ item.product_count }} Outfits</span>
+                            </div>
+                            <div class="occasion-admin-body">
+                                <h3 style="font-family:var(--font-serif); font-size:18px; font-weight:700; color:var(--text-dark);">{{ item.occasion.name }}</h3>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+                                    <span style="font-size:12px; color:var(--text-muted);">Active Rentals: <strong>{{ item.active_rentals }}</strong></span>
+                                    <div style="display:flex; gap:6px;">
+                                        <button type="button" class="action-btn-circle" style="width:30px; height:30px;" title="Edit Occasion" onclick="openEditOccasionDrawer({ id: {{ item.occasion.id }}, name: '{{ item.occasion.name|escapejs }}', gender_type: '{{ item.occasion.gender_type }}', image: '{{ item.sample_img }}' })">
+                                            <i class="fa-regular fa-pen-to-square" style="font-size:11px;"></i>
+                                        </button>
+                                        <a href="{% url 'category_one_delete' item.occasion.id %}" class="action-btn-circle" style="width:30px; height:30px; color:#C62828;" title="Delete" onclick="return confirm('Delete this occasion?');">
+                                            <i class="fa-regular fa-trash-can" style="font-size:11px;"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 4.5: RACKS & SECTIONS
+                     ========================================== -->
+                <section class="tab-panel" id="tab-sections">
+                    <div class="card-luxury" style="margin-bottom:24px;">
+                        <div class="card-header-flex">
+                            <div>
+                                <h2 class="card-heading">Add New Warehouse Rack Section</h2>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Define custom sections and rack numbers in the store/warehouse</p>
+                            </div>
+                        </div>
+                        <form action="{% url 'section_add' %}" method="POST" style="display:grid; grid-template-columns: 2fr 1fr auto; gap:16px; align-items:flex-end;">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="form-label">Section Name / Description</label>
+                                <input type="text" name="name" class="form-control" placeholder="e.g. Premium Bridal Silk Sarees" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Rack Number</label>
+                                <input type="text" name="rack_no" class="form-control" placeholder="e.g. A3" required>
+                            </div>
+                            <button type="submit" class="btn-primary-luxury">Add Rack Section</button>
+                        </form>
+                    </div>
+
+                    <div class="card-luxury">
+                        <div class="card-header-flex">
+                            <h3 class="card-heading">Configured Rack Sections ({{ sections_list|length }})</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="luxury-table">
+                                <thead>
+                                    <tr>
+                                        <th>Rack Number</th>
+                                        <th>Section Name</th>
+                                        <th>Outfits Allocated</th>
+                                        <th>Total Stock Items</th>
+                                        <th style="text-align:right; width:120px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in sections_list %}
+                                    <tr>
+                                        <td style="font-weight:700; color:var(--gold-primary);">Rack {{ item.section.rack_no }}</td>
+                                        <td style="font-weight:600; color:var(--text-dark);">{{ item.section.name }}</td>
+                                        <td style="font-weight:700;">{{ item.product_count }} types</td>
+                                        <td style="font-weight:700; color:var(--gold-primary);">{{ item.total_stock }} pcs</td>
+                                        <td>
+                                            <div style="display:flex; gap:6px; justify-content:flex-end;">
+                                                <button type="button" class="action-btn-circle" style="width:30px; height:30px;" title="Edit Section" onclick="openEditSectionDrawer({ id: {{ item.section.id }}, name: '{{ item.section.name|escapejs }}', rack_no: '{{ item.section.rack_no|escapejs }}' })">
+                                                    <i class="fa-regular fa-pen-to-square" style="font-size:11px;"></i>
+                                                </button>
+                                                <a href="{% url 'section_delete' item.section.id %}" class="action-btn-circle" style="width:30px; height:30px; color:#C62828;" title="Delete" onclick="return confirm('Delete section {{ item.section.name|escapejs }}?');">
+                                                    <i class="fa-regular fa-trash-can" style="font-size:11px;"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted);">No warehouse rack sections defined yet.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 5: BOOKINGS
+                     ========================================== -->
+                <section class="tab-panel" id="tab-bookings">
+                    <div class="card-luxury">
+                        <div class="card-header-flex">
+                            <div>
+                                <h2 class="card-heading">Master Bookings Ledger</h2>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Manage all incoming rental reservations and update dispatch statuses</p>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="luxury-table">
+                                <thead>
+                                    <tr>
+                                        <th>Booking ID</th>
+                                        <th>Customer</th>
+                                        <th>Outfit Reserved</th>
+                                        <th>Duration</th>
+                                        <th>Total Price</th>
+                                        <th>Payment</th>
+                                        <th>Order Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for b in bookings %}
+                                    <tr class="searchable-row">
+                                        <td style="font-weight:700; color:var(--gold-primary);">#{{ b.id }}</td>
+                                        <td>
+                                            <div style="font-weight:600;">{{ b.user.username }}</div>
+                                            <small style="color:var(--text-muted);">{{ b.user.email }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="table-product-cell">
+                                                <img src="{{ b.product.image_1|default:'/static/images/hero-couple.jpg' }}" class="table-product-thumb" alt="">
+                                                <div>
+                                                    <span style="font-weight:600;">{{ b.product.name }}</span>
+                                                    <div style="font-size:11.5px; color:var(--text-muted);">Size: {{ b.size|default:'M' }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>{{ b.rental_start|date:"d M Y"|default:"Immediate" }}</div>
+                                            <small style="color:var(--text-muted);">{{ b.rental_days }} Days</small>
+                                        </td>
+                                        <td style="font-weight:700;">₹{{ b.total_price }}</td>
+                                        <td>
+                                            <span class="status-badge badge-info">{{ b.payment_method|upper }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge badge-{{ b.status }}" id="booking-badge-{{ b.id }}">{{ b.status|title }}</span>
+                                        </td>
+                                        <td>
+                                             <div style="display:flex; gap:8px; align-items:center;">
+                                                 <button type="button" class="btn-secondary-luxury" style="padding:6px 12px; font-size:12px;" onclick="openBookingDrawer({{ b.id }})">Details</button>
+                                                 {% if b.status == "pending" %}
+                                                 <button type="button" class="btn-primary-luxury" id="accept-btn-{{ b.id }}"
+                                                         style="padding:6px 12px; font-size:12px; background:#2E7D32; color:#fff; border:none; border-radius:6px; cursor:pointer;"
+                                                         onclick="ownerApproveBooking({{ b.id }}, 'confirmed')">
+                                                     Accept
+                                                 </button>
+                                                 <button type="button" class="btn-primary-luxury" id="reject-btn-{{ b.id }}"
+                                                         style="padding:6px 12px; font-size:12px; background:#C62828; color:#fff; border:none; border-radius:6px; cursor:pointer;"
+                                                         onclick="ownerApproveBooking({{ b.id }}, 'cancelled')">
+                                                     Reject
+                                                 </button>
+                                                 {% endif %}
+                                             </div>
+                                         </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);">No bookings recorded yet.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 6: ACTIVE RENTALS & RETURNS
+                     ========================================== -->
+                <section class="tab-panel" id="tab-rentals">
+                    <div class="card-luxury">
+                        <div class="card-header-flex">
+                            <div>
+                                <h2 class="card-heading">Active Rental Tracker ({{ active_rentals_list|length }})</h2>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Live tracker of garments currently in possession of customers</p>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="luxury-table">
+                                <thead>
+                                    <tr>
+                                        <th>Outfit</th>
+                                        <th>Customer</th>
+                                        <th>Rental Period</th>
+                                        <th>Expected Return</th>
+                                        <th>Return Urgency</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for r in active_rentals_list %}
+                                    <tr class="searchable-row">
+                                        <td>
+                                            <div class="table-product-cell">
+                                                <img src="{{ r.booking.product.image_1 }}" class="table-product-thumb" alt="">
+                                                <div>
+                                                    <span style="font-weight:600;">{{ r.booking.product.name }}</span>
+                                                    <div style="font-size:11.5px; color:var(--text-muted);">Booking #{{ r.booking.id }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div style="font-weight:600;">{{ r.booking.user.username }}</div>
+                                            <small style="color:var(--text-muted);">{{ r.booking.user.phone|default:r.booking.user.email }}</small>
+                                        </td>
+                                        <td>{{ r.start_date|date:"d M" }} &rarr; {{ r.end_date|date:"d M Y" }}</td>
+                                        <td style="font-weight:600;">{{ r.end_date|date:"d M Y" }}</td>
+                                        <td><span class="status-badge {{ r.badge_class }}">{{ r.return_badge }}</span></td>
+                                        <td>
+                                            <button type="button" class="btn-primary-luxury" style="padding:6px 14px; font-size:12px;" onclick="openBookingDrawer({{ r.booking.id }})">Mark Returned</button>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-muted);">No active garments rented currently.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 8: CUSTOMERS
+                     ========================================== -->
+                <section class="tab-panel" id="tab-customers">
+                    <div class="card-luxury">
+                        <div class="card-header-flex">
+                            <h2 class="card-heading">Registered Customers ({{ customers|length }})</h2>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="luxury-table">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Contact Email</th>
+                                        <th>Total Bookings</th>
+                                        <th>Lifetime Spent</th>
+                                        <th>Current Rental</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for c in customers %}
+                                    <tr class="searchable-row">
+                                        <td style="font-weight:600;">{{ c.user.username }}</td>
+                                        <td>{{ c.user.email }}</td>
+                                        <td style="font-weight:700;">{{ c.bookings_count }}</td>
+                                        <td style="font-weight:700; color:var(--gold-primary);">₹{{ c.total_spent }}</td>
+                                        <td>{{ c.current_rental }}</td>
+                                        <td><span class="status-badge badge-gold">{{ c.status }}</span></td>
+                                        <td>
+                                            <button type="button" class="btn-secondary-luxury" style="padding:6px 14px; font-size:12px;" onclick="openCustomerDrawer({{ c.user.id }})">View Profile &rarr;</button>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">No customers found.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 9: REVIEWS & FEEDBACK
+                     ========================================== -->
+                <section class="tab-panel" id="tab-reviews">
+                    <div class="card-luxury">
+                        <div class="card-header-flex">
+                            <h2 class="card-heading">Customer Reviews & Testimonials</h2>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="luxury-table">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Outfit</th>
+                                        <th>Rating</th>
+                                        <th>Feedback Content</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for f in feedback_items %}
+                                    <tr class="searchable-row">
+                                        <td style="font-weight:600;">{{ f.user.username }}</td>
+                                        <td>{{ f.product.name }}</td>
+                                        <td style="color:#B9975B; font-weight:bold; font-size:12px;">
+                                            {% if f.rating >= 1 %}&#9733;{% endif %}
+                                            {% if f.rating >= 2 %}&#9733;{% endif %}
+                                            {% if f.rating >= 3 %}&#9733;{% endif %}
+                                            {% if f.rating >= 4 %}&#9733;{% endif %}
+                                            {% if f.rating >= 5 %}&#9733;{% endif %}
+                                        </td>
+                                        <td style="max-width:320px;">&ldquo;{{ f.feedback }}&rdquo;</td>
+                                        <td>{{ f.created_at|date:"d M Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'feedback_approve' f.id %}" class="btn-primary-luxury" style="padding:4px 12px; font-size:11.5px;">Approve</a>
+                                            <a href="{% url 'owner_feedback_delete' f.id %}" class="action-btn-circle" style="width:28px; height:28px; display:inline-flex; color:#C62828;" onclick="return confirm('Delete review?');"><i class="fa-regular fa-trash-can"></i></a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-muted);">No pending reviews.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 10: OFFERS & PROMOTIONS
+                     ========================================== -->
+                <section class="tab-panel" id="tab-offers">
+                    <div class="card-luxury" style="margin-bottom:24px;">
+                        <div class="card-header-flex">
+                            <h2 class="card-heading">Create Promo Code / Discount</h2>
+                        </div>
+                        <form action="{% url 'offer_add' %}" method="POST" style="display:grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr auto; gap:16px; align-items:flex-end;">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="form-label">Offer Title</label>
+                                <input type="text" name="name" class="form-control" placeholder="e.g. Royal Wedding Season" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Promo Code</label>
+                                <input type="text" name="code" class="form-control" placeholder="ROYAL15" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Type</label>
+                                <select name="offer_type" class="form-control">
+                                    <option value="percentage">Percentage (%)</option>
+                                    <option value="fixed">Flat Discount (₹)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Value</label>
+                                <input type="number" name="discount_value" class="form-control" placeholder="15" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Valid Until</label>
+                                <input type="date" name="end_date" class="form-control">
+                            </div>
+                            <button type="submit" class="btn-primary-luxury">Activate Offer</button>
+                        </form>
+                    </div>
+
+                    <div class="card-luxury">
+                        <div class="card-header-flex">
+                            <h3 class="card-heading">Active Promotions ({{ offers|length }})</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="luxury-table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Campaign</th>
+                                        <th>Benefit</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for o in offers %}
+                                    <tr>
+                                        <td style="font-weight:700; color:var(--gold-primary);">{{ o.code }}</td>
+                                        <td>{{ o.name }}</td>
+                                        <td style="font-weight:600;">{{ o.discount_value }} {% if o.offer_type == 'percentage' %}%{% else %}₹{% endif %} Off</td>
+                                        <td>
+                                            {% if o.is_active %}<span class="status-badge badge-success">Active</span>{% else %}<span class="status-badge badge-warning">Paused</span>{% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'offer_toggle' o.id %}" class="btn-secondary-luxury" style="padding:4px 10px; font-size:11.5px;">{% if o.is_active %}Pause{% else %}Resume{% endif %}</a>
+                                            <a href="{% url 'offer_delete' o.id %}" class="action-btn-circle" style="width:28px; height:28px; display:inline-flex; color:#C62828;" onclick="return confirm('Delete offer?');"><i class="fa-regular fa-trash-can"></i></a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">No active offers created yet.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 11: PAYMENTS
+                     ========================================== -->
+                <section class="tab-panel" id="tab-payments">
+                    <div class="card-luxury">
+                        <div class="card-header-flex">
+                            <div>
+                                <h2 class="card-heading">Payment Transactions</h2>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Verified payment gateway transactions & direct settlements</p>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="luxury-table">
+                                <thead>
+                                    <tr>
+                                        <th>Booking Ref</th>
+                                        <th>Customer</th>
+                                        <th>Settlement Method</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for b in bookings %}
+                                    <tr>
+                                        <td style="font-weight:700; color:var(--gold-primary);">#{{ b.id }}</td>
+                                        <td>{{ b.user.username }}</td>
+                                        <td>{{ b.payment_method|upper }}</td>
+                                        <td style="font-weight:700;">₹{{ b.total_price }}</td>
+                                        <td>{{ b.created_at|date:"d M Y"|default:"Today" }}</td>
+                                        <td><span class="status-badge badge-success">Completed</span></td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-muted);">No transactions recorded.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 12: ANALYTICS & REPORTS
+                     ========================================== -->
+                <section class="tab-panel" id="tab-analytics">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
+                        <div class="card-luxury">
+                            <h2 class="card-heading" style="margin-bottom:20px;">Top Occasion Popularity</h2>
+                            <div style="display:flex; flex-direction:column; gap:16px;">
+                                {% for item in occasions_list|slice:":5" %}
+                                <div>
+                                    <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:600; margin-bottom:6px;">
+                                        <span>{{ item.occasion.name }}</span>
+                                        <span>{{ item.product_count }} items</span>
+                                    </div>
+                                    <div style="height:8px; background:var(--bg-subtle); border-radius:4px; overflow:hidden;">
+                                        <div style="height:100%; width:{{ item.product_count }}0%; max-width:100%; background:var(--gold-primary); border-radius:4px;"></div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="card-luxury">
+                            <h2 class="card-heading" style="margin-bottom:20px;">Key Business Metrics</h2>
+                            <div style="display:flex; flex-direction:column; gap:14px;">
+                                <div style="display:flex; justify-content:space-between; padding:12px; background:var(--bg-subtle); border-radius:10px;">
+                                    <span style="color:var(--text-muted);">Average Rental Value:</span>
+                                    <strong>₹4,850</strong>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; padding:12px; background:var(--bg-subtle); border-radius:10px;">
+                                    <span style="color:var(--text-muted);">Cancellation Rate:</span>
+                                    <strong style="color:#2E7D32;">1.8% (Ultra Low)</strong>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; padding:12px; background:var(--bg-subtle); border-radius:10px;">
+                                    <span style="color:var(--text-muted);">Repeat Customer Rate:</span>
+                                    <strong>34.2%</strong>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; padding:12px; background:var(--bg-subtle); border-radius:10px;">
+                                    <span style="color:var(--text-muted);">Return On-Time Rate:</span>
+                                    <strong style="color:#2E7D32;">98.5%</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 13: SETTINGS
+                     ========================================== -->
+                <section class="tab-panel" id="tab-settings">
+                    <div class="card-luxury" style="max-width:700px;">
+                        <h2 class="card-heading" style="margin-bottom:24px;">Boutique Configuration</h2>
+                        <div style="display:flex; flex-direction:column; gap:20px;">
+                            <div class="form-group">
+                                <label class="form-label">Boutique Name</label>
+                                <input type="text" class="form-control" value="LIYAURA Luxury Wedding Fashion Rentals">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Rental Buffer Period</label>
+                                <select class="form-control">
+                                    <option>24 Hours Eco Dry-Clean Buffer</option>
+                                    <option>48 Hours Complete Sanitization Buffer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Default Security Deposit</label>
+                                <input type="text" class="form-control" value="₹2,000 (Refundable upon inspection)">
+                            </div>
+                            <button type="button" class="btn-primary-luxury" style="align-self:flex-start;">Save Configuration</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==========================================
+         GLOBAL SLIDE-OUT DRAWERS
+         ========================================== -->
+    <div class="drawer-backdrop" id="globalDrawerBackdrop"></div>
+
+    <!-- 1. Booking Details Drawer -->
+    <div class="drawer" id="bookingDetailDrawer">
+        <div class="drawer-header">
+            <div>
+                <h3 class="drawer-title">Booking Details</h3>
+                <span id="bd_id" style="font-size:12.5px; color:var(--gold-primary); font-weight:700;"></span>
+            </div>
+            <button type="button" class="drawer-close-btn" data-close-drawer><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="drawer-body">
+            <div style="display:flex; gap:16px; align-items:center; background:var(--bg-subtle); padding:16px; border-radius:12px;">
+                <img id="bd_product_img" src="" style="width:70px; height:90px; border-radius:8px; object-fit:cover;">
+                <div>
+                    <h4 id="bd_product_name" style="font-family:var(--font-serif); font-size:16px; font-weight:700; color:var(--text-dark);"></h4>
+                    <div id="bd_category" style="font-size:12px; color:var(--text-muted);"></div>
+                    <div id="bd_occasion" style="font-size:12px; color:var(--gold-primary); font-weight:600;"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Rental Duration</label>
+                <div id="bd_dates" style="font-weight:600; color:var(--text-dark);"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Total Rental Value</label>
+                <div id="bd_amount" style="font-weight:700; font-size:18px; color:var(--gold-primary);"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Payment Method</label>
+                <div id="bd_payment" style="font-weight:600; color:var(--text-dark); text-transform:uppercase;"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Customer Information</label>
+                <div id="bd_customer_name" style="font-weight:600;"></div>
+                <div id="bd_customer_email" style="font-size:12.5px; color:var(--text-muted);"></div>
+                <div id="bd_customer_phone" style="font-size:12.5px; color:var(--text-muted);"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Delivery Address</label>
+                <div id="bd_address" style="font-size:13px; color:var(--text-main);"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Update Booking Status</label>
+                <select id="bd_status_select" class="form-control" style="font-weight:600;">
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="preparing">Preparing Garment</option>
+                    <option value="out_for_delivery">Out for Delivery</option>
+                    <option value="delivered">Delivered / Rented</option>
+                    <option value="returned">Returned to Boutique</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+        </div>
+        <div class="drawer-footer">
+            <button type="button" class="btn-secondary-luxury" data-close-drawer>Close</button>
+        </div>
+    </div>
+
+    <!-- 2. Customer Profile Drawer -->
+    <div class="drawer" id="customerDetailDrawer">
+        <div class="drawer-header">
+            <div>
+                <h3 class="drawer-title">Customer Profile</h3>
+                <span id="cd_name" style="font-size:13px; color:var(--gold-primary); font-weight:700;"></span>
+            </div>
+            <button type="button" class="drawer-close-btn" data-close-drawer><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="drawer-body">
+            <div style="background:var(--bg-subtle); padding:16px; border-radius:12px;">
+                <div id="cd_email" style="font-size:13px; color:var(--text-dark); margin-bottom:4px;"></div>
+                <div id="cd_phone" style="font-size:12px; color:var(--text-muted);"></div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div class="stat-card" style="padding:14px;">
+                    <div class="stat-label">Bookings</div>
+                    <div id="cd_bookings_count" class="stat-value" style="font-size:20px;">0</div>
+                </div>
+                <div class="stat-card" style="padding:14px;">
+                    <div class="stat-label">Total Spend</div>
+                    <div id="cd_total_spent" class="stat-value" style="font-size:20px; color:var(--gold-primary);">₹0</div>
+                </div>
+            </div>
+
+            <div>
+                <h4 style="font-family:var(--font-serif); font-size:15px; margin-bottom:12px;">Rental History</h4>
+                <div id="cd_bookings_list"></div>
+            </div>
+        </div>
+        <div class="drawer-footer">
+            <button type="button" class="btn-secondary-luxury" data-close-drawer>Close</button>
+        </div>
+    </div>
+
+    <!-- 3. Add / Edit Product Drawer with Gemini AI -->
+    <div class="drawer" id="productDrawer">
+        <div class="drawer-header">
+            <h3 class="drawer-title" id="productDrawerTitle">Add New Outfit</h3>
+            <button type="button" class="drawer-close-btn" data-close-drawer><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="productForm" action="{% url 'product_add' %}" method="POST" enctype="multipart/form-data" style="display:flex; flex-direction:column; flex:1; min-height:0; overflow:hidden;">
+            {% csrf_token %}
+            <input type="hidden" name="ai_generated_image_1" id="ai_generated_image_1_val" value="">
+            <input type="hidden" name="ai_generated_image_2" id="ai_generated_image_2_val" value="">
+            <input type="hidden" name="ai_generated_image_3" id="ai_generated_image_3_val" value="">
+            <div class="drawer-body">
+                <div class="form-group">
+                    <label class="form-label">Product Name</label>
+                    <input type="text" name="name" id="pf_name" class="form-control" placeholder="e.g. Royal Maroon Velvet Sherwani" required>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px;">
+                    <div class="form-group">
+                        <label class="form-label">Occasion</label>
+                        <select name="category_1" id="pf_category_1" class="form-control" required>
+                            {% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select name="category_2" id="pf_category_2" class="form-control" required>
+                            {% for c in subcategories %}<option value="{{ c.id }}">{{ c.name }} ({{ c.gender_type|title }})</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rack Section</label>
+                        <select name="section" id="pf_section" class="form-control" required>
+                            {% for s in sections %}<option value="{{ s.id }}">Rack {{ s.rack_no }} ({{ s.name }})</option>{% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px;">
+                    <div class="form-group">
+                        <label class="form-label">Rental Price (₹)</label>
+                        <input type="number" name="offer_price" id="pf_offer_price" class="form-control" placeholder="4999" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Orig. Price (₹)</label>
+                        <input type="number" name="actual_price" id="pf_actual_price" class="form-control" placeholder="65000" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Stock Units</label>
+                        <input type="number" name="quantity" id="pf_quantity" class="form-control" value="1" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Garment Description</label>
+                    <textarea name="description" id="pf_description" class="form-control" rows="3" placeholder="Describe fabric, zardozi work, neckline, and styling advice..."></textarea>
+                </div>
+
+                <!-- Gemini AI Generator Assistant -->
+                <div class="gemini-generator-box">
+                    <i class="fa-solid fa-wand-magic-sparkles gemini-sparkle-icon"></i>
+                    <div>
+                        <strong style="font-size:14px; color:var(--text-dark);">Gemini AI Fashion Imagery (Google Imagen 3)</strong>
+                        <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">Generate unique couture photography specifically matching this outfit</p>
+                    </div>
+
+                    <!-- Gemini API Key Input -->
+                    <div style="width:100%; margin-top:8px; text-align:left;">
+                        <label class="form-label" style="font-size:11.5px; font-weight:700; color:var(--gold-dark); margin-bottom:4px; display:flex; justify-content:space-between;">
+                            <span>Google Gemini API Key</span>
+                            <span id="apiKeySavedBadge" style="color:#2E7D32; font-size:11px; display:none;">✓ Key Saved</span>
+                        </label>
+                        <div class="input-wrap" style="position:relative;">
+                            <i class="fa-solid fa-key" style="position:absolute; left:14px; top:12px; color:var(--text-muted); font-size:12px;"></i>
+                            <input type="password" id="gemini_api_key_input" class="form-control" placeholder="Paste your Google Gemini API Key (AIza...)" style="font-size:12.5px; padding-left:38px; background:#FFF;">
+                        </div>
+                        <div style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">
+                            Your key is stored safely in your browser session to generate high-resolution wedding couture assets.
+                        </div>
+                    </div>
+
+                    <div style="width:100%; display:flex; gap:10px; margin-top:10px;">
+                        <input type="text" id="pf_color_prompt" class="form-control" placeholder="Color theme (e.g. Royal Crimson Red, Antique Gold)" style="font-size:12px; flex:1; background:#FFF;">
+                        <button type="button" class="btn-primary-luxury" id="generateGeminiBtn" style="font-size:12px; padding:7px 18px; white-space:nowrap;">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Generate with Gemini</span>
+                        </button>
+                    </div>
+
+                    <!-- Alert message box for API feedback -->
+                    <div id="ai_alert_box" style="display:none; width:100%; padding:10px 14px; border-radius:10px; font-size:12px; margin-top:10px; text-align:left;"></div>
+
+                    <div id="ai_preview_box" style="display:none; width:100%; margin-top:14px;">
+                        <img id="ai_preview_img" src="" style="width:100%; height:230px; object-fit:cover; border-radius:12px; border:1.5px solid var(--gold-primary); box-shadow:var(--shadow-sm);">
+                        
+                        <div style="margin-top:10px; font-size:12px; font-weight:700; color:var(--text-dark); text-transform:uppercase; letter-spacing:0.06em;">Assign Generated Image to Slot:</div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-top:8px;">
+                            <button type="button" class="btn-secondary-luxury" id="setSlot1Btn" style="padding:6px 4px; font-size:11.5px; justify-content:center;">
+                                <i class="fa-solid fa-1"></i> Slot 1 (Front)
+                            </button>
+                            <button type="button" class="btn-secondary-luxury" id="setSlot2Btn" style="padding:6px 4px; font-size:11.5px; justify-content:center;">
+                                <i class="fa-solid fa-2"></i> Slot 2 (Side)
+                            </button>
+                            <button type="button" class="btn-secondary-luxury" id="setSlot3Btn" style="padding:6px 4px; font-size:11.5px; justify-content:center;">
+                                <i class="fa-solid fa-3"></i> Slot 3 (Back)
+                            </button>
+                        </div>
+                        <button type="button" class="btn-primary-luxury" id="setAllSlotsBtn" style="width:100%; margin-top:8px; font-size:12px; padding:6px 12px; justify-content:center;">
+                            <i class="fa-solid fa-check-double"></i> Apply to All 3 Slots
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3 Interactive Product Image Slots -->
+                <div style="display:flex; flex-direction:column; gap:14px; margin-top:10px;">
+                    <div style="font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-dark);">Product Images (Slots 1, 2, 3)</div>
+                    
+                    <!-- Slot 1 -->
+                    <div class="card-luxury" style="padding:14px; background:var(--bg-subtle);">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                            <label class="form-label" style="margin:0; font-weight:700; color:var(--gold-dark);">Slot 1: Main Front Cover</label>
+                            <span id="slot1_status" style="font-size:11px; font-weight:600; color:var(--text-muted);">No image selected</span>
+                        </div>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <img id="slot1_preview" src="/static/images/bride-vertical.png" style="width:50px; height:60px; border-radius:6px; object-fit:cover; border:1px solid var(--line-border);">
+                            <div style="flex:1;">
+                                <input type="file" name="image_1" id="file_slot1" class="form-control" style="font-size:12px; padding:6px 10px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slot 2 -->
+                    <div class="card-luxury" style="padding:14px; background:var(--bg-subtle);">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                            <label class="form-label" style="margin:0; font-weight:700; color:var(--gold-dark);">Slot 2: Detail / Angle View</label>
+                            <span id="slot2_status" style="font-size:11px; font-weight:600; color:var(--text-muted);">Optional</span>
+                        </div>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <img id="slot2_preview" src="/static/images/bride-vertical.png" style="width:50px; height:60px; border-radius:6px; object-fit:cover; border:1px solid var(--line-border); opacity:0.6;">
+                            <div style="flex:1;">
+                                <input type="file" name="image_2" id="file_slot2" class="form-control" style="font-size:12px; padding:6px 10px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slot 3 -->
+                    <div class="card-luxury" style="padding:14px; background:var(--bg-subtle);">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                            <label class="form-label" style="margin:0; font-weight:700; color:var(--gold-dark);">Slot 3: Back / Drape View</label>
+                            <span id="slot3_status" style="font-size:11px; font-weight:600; color:var(--text-muted);">Optional</span>
+                        </div>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <img id="slot3_preview" src="/static/images/bride-vertical.png" style="width:50px; height:60px; border-radius:6px; object-fit:cover; border:1px solid var(--line-border); opacity:0.6;">
+                            <div style="flex:1;">
+                                <input type="file" name="image_3" id="file_slot3" class="form-control" style="font-size:12px; padding:6px 10px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="drawer-footer">
+                <button type="button" class="btn-secondary-luxury" data-close-drawer>Cancel</button>
+                <button type="submit" class="btn-primary-luxury">Save Product</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 4. Notification Center Drawer -->
+    <div class="drawer" id="notificationDrawer">
+        <div class="drawer-header">
+            <h3 class="drawer-title">Notifications</h3>
+            <button type="button" class="drawer-close-btn" data-close-drawer><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="drawer-body">
+            {% for n in notifications %}
+            <div style="display:flex; gap:14px; padding:14px; border-radius:12px; background:{% if n.unread %}var(--gold-subtle){% else %}var(--bg-subtle){% endif %};">
+                <div style="width:36px; height:36px; border-radius:50%; background:var(--bg-card); color:var(--gold-primary); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <i class="fa-solid {{ n.icon }}"></i>
+                </div>
+                <div>
+                    <div style="font-weight:600; font-size:13.5px; color:var(--text-dark);">{{ n.title }}</div>
+                    <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">{{ n.desc }}</div>
+                    <div style="font-size:11px; color:var(--gold-dark); margin-top:4px;">{{ n.time }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="drawer-footer">
+            <button type="button" class="btn-secondary-luxury" data-close-drawer>Close</button>
+        </div>
+    </div>
+
+    <!-- 5. Edit Category Drawer -->
+    <div class="drawer" id="categoryEditDrawer">
+        <div class="drawer-header">
+            <h3 class="drawer-title" id="catEditDrawerTitle">Edit Category</h3>
+            <button type="button" class="drawer-close-btn" data-close-drawer><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="catEditForm" action="" method="POST" enctype="multipart/form-data" style="display:flex; flex-direction:column; flex:1; min-height:0; overflow:hidden;">
+            {% csrf_token %}
+            <div class="drawer-body">
+                <div class="form-group">
+                    <label class="form-label">Category Name</label>
+                    <input type="text" name="name" id="cat_edit_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Parent Occasion</label>
+                    <select name="category_1" id="cat_edit_category_1" class="form-control" required>
+                        {% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gender Segment</label>
+                    <select name="gender_type" id="cat_edit_gender_type" class="form-control" required>
+                        <option value="bride">Bride Couture</option>
+                        <option value="groom">Groom Wardrobe</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category Thumbnail</label>
+                    <div style="display:flex; gap:12px; align-items:center; margin-bottom:10px;">
+                        <img id="cat_edit_img_preview" src="/static/images/bride-vertical.png" style="width:64px; height:64px; border-radius:10px; object-fit:cover; border:1.5px solid var(--gold-primary); box-shadow:var(--shadow-sm);">
+                        <div style="font-size:12px; color:var(--text-muted);">Current category cover image. Upload a new file below to replace it.</div>
+                    </div>
+                    <input type="file" name="image" id="cat_edit_image" class="form-control" onchange="previewDrawerImage(this, 'cat_edit_img_preview')">
+                </div>
+            </div>
+            <div class="drawer-footer">
+                <button type="button" class="btn-secondary-luxury" data-close-drawer>Cancel</button>
+                <button type="submit" class="btn-primary-luxury">Update Category</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 6. Edit Occasion Drawer -->
+    <div class="drawer" id="occasionEditDrawer">
+        <div class="drawer-header">
+            <h3 class="drawer-title" id="occEditDrawerTitle">Edit Occasion</h3>
+            <button type="button" class="drawer-close-btn" data-close-drawer><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="occEditForm" action="" method="POST" enctype="multipart/form-data" style="display:flex; flex-direction:column; flex:1; min-height:0; overflow:hidden;">
+            {% csrf_token %}
+            <div class="drawer-body">
+                <div class="form-group">
+                    <label class="form-label">Occasion Title</label>
+                    <input type="text" name="name" id="occ_edit_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gender Focus</label>
+                    <select name="gender_type" id="occ_edit_gender_type" class="form-control" required>
+                        <option value="bride">Bride / Couple</option>
+                        <option value="groom">Groom Focus</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Hero Cover Image</label>
+                    <div style="display:flex; gap:12px; align-items:center; margin-bottom:10px;">
+                        <img id="occ_edit_img_preview" src="/static/images/hero-couple.jpg" style="width:90px; height:60px; border-radius:10px; object-fit:cover; border:1.5px solid var(--gold-primary); box-shadow:var(--shadow-sm);">
+                        <div style="font-size:12px; color:var(--text-muted);">Current occasion hero cover. Upload a new file below to replace it.</div>
+                    </div>
+                    <input type="file" name="image" id="occ_edit_image" class="form-control" onchange="previewDrawerImage(this, 'occ_edit_img_preview')">
+                </div>
+            </div>
+            <div class="drawer-footer">
+                <button type="button" class="btn-secondary-luxury" data-close-drawer>Cancel</button>
+                <button type="submit" class="btn-primary-luxury">Update Occasion</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 7. Edit Section Drawer -->
+    <div class="drawer" id="sectionEditDrawer">
+        <div class="drawer-header">
+            <h3 class="drawer-title" id="secEditDrawerTitle">Edit Section</h3>
+            <button type="button" class="drawer-close-btn" data-close-drawer><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="secEditForm" action="" method="POST" style="display:flex; flex-direction:column; flex:1; min-height:0; overflow:hidden;">
+            {% csrf_token %}
+            <div class="drawer-body">
+                <div class="form-group">
+                    <label class="form-label">Section Name / Description</label>
+                    <input type="text" name="name" id="sec_edit_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rack Number</label>
+                    <input type="text" name="rack_no" id="sec_edit_rack_no" class="form-control" required>
+                </div>
+            </div>
+            <div class="drawer-footer">
+                <button type="button" class="btn-secondary-luxury" data-close-drawer>Cancel</button>
+                <button type="submit" class="btn-primary-luxury">Update Section</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="{% static 'js/dashboard.js' %}"></script>
+    <script>
+        function ownerApproveBooking(bookingId, newStatus) {
+            if (!confirm(`Are you sure you want to ${newStatus === 'confirmed' ? 'Accept' : 'Reject'} booking #${bookingId}?`)) {
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append("status", newStatus);
+            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]")?.value || "";
+
+            fetch(`/owner/api/booking/${bookingId}/update-status/`, {
+                method: "POST",
+                headers: { "X-CSRFToken": csrfToken },
+                body: formData,
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    // Update status badge on master ledger row
+                    const badge = document.getElementById(`booking-badge-${bookingId}`);
+                    if (badge) {
+                        badge.className = `status-badge badge-${newStatus}`;
+                        badge.innerText = data.display_status;
+                    }
+                    
+                    // Hide approval buttons
+                    const acceptBtn = document.getElementById(`accept-btn-${bookingId}`);
+                    const rejectBtn = document.getElementById(`reject-btn-${bookingId}`);
+                    if (acceptBtn) acceptBtn.style.display = 'none';
+                    if (rejectBtn) rejectBtn.style.display = 'none';
+                    
+                    alert(`Booking #${bookingId} has been ${newStatus === 'confirmed' ? 'accepted' : 'rejected'} successfully.`);
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("An error occurred while updating booking status.");
+            });
+        }
+     </script>
+</body>
+</html>

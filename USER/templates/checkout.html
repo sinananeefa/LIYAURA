@@ -1,0 +1,299 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | LIYAURA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/liyaura.css' %}">
+</head>
+<body class="user-theme">
+{% include "_navbar.html" %}
+{% include "_flash.html" %}
+
+<section class="checkout-page">
+    <div class="container">
+        <header class="page-hero" style="background:transparent;border:0;padding:0 0 34px;">
+            <p class="eyebrow">Almost There</p>
+            <h1>Secure <i class="gold">Checkout</i></h1>
+        </header>
+
+        {% if cart_items %}
+        <div class="checkout-layout">
+            <form method="POST" id="placeForm" class="d-block w-100">
+                {% csrf_token %}
+                <input type="hidden" name="applied_promo" id="appliedPromoInput" value="">
+
+                <!-- ===== ADDRESS ===== -->
+                <div class="checkout-section">
+                    <h3>Delivery Address</h3>
+                    <p class="cs-sub">Where should we deliver your outfit?</p>
+                    {% if addresses %}
+                        {% for address in addresses %}
+                        <label class="addr-card">
+                            <input type="radio" name="address_id" value="{{ address.id }}" {% if address.is_default or forloop.first %}checked{% endif %} required>
+                            <div class="flex-grow-1">
+                                <strong>{{ address.name }}</strong>
+                                {% if address.is_default %}<span class="default-badge">Default</span>{% endif %}
+                                <span class="addr-phone">{{ address.phone }}</span>
+                                <p>{{ address.house }}{% if address.street %}, {{ address.street }}{% endif %}, {{ address.city }}, {{ address.state }} - {{ address.pin }}</p>
+                            </div>
+                            <span class="addr-actions">
+                                <a href="{% url 'address_set_default' address.id %}" class="link-btn">Set Default</a>
+                                <a href="{% url 'address_delete' address.id %}" class="link-btn danger" onclick="return confirm('Remove this address?')">Remove</a>
+                            </span>
+                        </label>
+                        {% endfor %}
+                    {% else %}
+                    <div class="empty-state py-4"><p>No saved addresses yet. Add one below.</p></div>
+                    {% endif %}
+                    <button class="btn btn-outline btn-sm mt-3" type="button" id="toggleAddrForm">
+                        <i class="fa-solid fa-plus"></i> Add New Address
+                    </button>
+                    <div id="addrForm" style="display:none" class="mt-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="name">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Full name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="phone">Phone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" placeholder="10-digit mobile number" maxlength="10">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label" for="house">Flat / House / Area</label>
+                                <input type="text" class="form-control" id="house" name="house" placeholder="Flat, House no., Building, Street">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label" for="street">Landmark <small class="text-muted">(optional)</small></label>
+                                <input type="text" class="form-control" id="street" name="street" placeholder="Near ...">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="city">City</label>
+                                <input type="text" class="form-control" id="city" name="city" placeholder="City">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="state">State</label>
+                                <input type="text" class="form-control" id="state" name="state" placeholder="State">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="pin">PIN Code</label>
+                                <input type="text" class="form-control" id="pin" name="pin" placeholder="6-digit PIN" maxlength="6">
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="is_default" id="isDefault">
+                                    <label class="form-check-label" for="isDefault">Make this my default address</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-gold" name="action" value="save_address">Save Address</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== RENTAL DETAILS ===== -->
+                <div class="checkout-section">
+                    <h3>Rental Details</h3>
+                    <p class="cs-sub">Confirm your celebration dates for this rental.</p>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label" for="coRentalStart">Rental Start Date</label>
+                            <input type="date" class="form-control" id="coRentalStart" name="rental_start">
+                            <small class="text-muted">Defaults to 7 days from today if blank.</small>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="coRentalDays">Rental Duration</label>
+                            <select class="form-select" id="coRentalDays" name="rental_days" form="placeForm">
+                                {% for d in "123456789"|make_list %}<option value="{{ d }}">{{ d }} day{% if d != '1' %}s{% endif %}</option>{% endfor %}
+                                <option value="10">10 days</option>
+                                <option value="15">15 days</option>
+                                <option value="21">21 days</option>
+                                <option value="30">30 days</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="coReturn">Return Date</label>
+                            <input type="text" class="form-control" id="coReturn" value="Auto-calculated" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== PAYMENT ===== -->
+                <div class="checkout-section">
+                    <h3>Payment Method</h3>
+                    <p class="cs-sub">Choose how you would like to pay.</p>
+                    <div class="pay-methods">
+                        <label class="pay-method">
+                            <input type="radio" name="payment_method" value="upi" checked>
+                            <i class="fa-solid fa-qrcode"></i>
+                            <span class="pm-label">UPI</span>
+                        </label>
+                        <label class="pay-method">
+                            <input type="radio" name="payment_method" value="card">
+                            <i class="fa-regular fa-credit-card"></i>
+                            <span class="pm-label">Card</span>
+                        </label>
+                        <label class="pay-method">
+                            <input type="radio" name="payment_method" value="netbanking">
+                            <i class="fa-solid fa-building-columns"></i>
+                            <span class="pm-label">Net Banking</span>
+                        </label>
+                        <label class="pay-method">
+                            <input type="radio" name="payment_method" value="cod">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                            <span class="pm-label">Cash on Delivery</span>
+                        </label>
+                    </div>
+                </div>
+            </form>
+
+            <aside>
+                <div class="summary-card">
+                    <h3>Price Details</h3>
+                    {% for item in cart_items %}
+                    <div class="mini-cart-item">
+                        {% if item.product.image_1 %}<img src="{{ item.product.image_1 }}" alt="" loading="lazy">{% endif %}
+                        <div>
+                            <div class="mci-name">{{ item.product.name }}</div>
+                            <div class="mci-meta">{{ item.quantity }} &times; {{ item.rental_days }} day{% if item.rental_days > 1 %}s{% endif %} &middot; Size {{ item.size|default:"M" }}</div>
+                        </div>
+                        <span class="mci-price">&#8377;{{ item.rental_total }}</span>
+                    </div>
+                    {% endfor %}
+                    <div class="summary-row dashed mt-3"><span>Subtotal (per day)</span><span class="val">&#8377;{{ total }}</span></div>
+                    <div class="summary-row"><span>Delivery</span><b style="color:#3c6e46;">Free</b></div>
+                    <div class="summary-row"><span>Security Deposit</span><span class="val">&#8377;{{ security_deposit|default:"2,000" }}</span></div>
+                    
+                    <div class="summary-row" id="promoDiscountRow" style="display: none; color: #3c6e46; font-weight: 500;">
+                        <span>Discount (<span id="promoCodeLabel"></span>)</span>
+                        <span class="val">-&#8377;<span id="promoDiscountVal">0</span></span>
+                    </div>
+
+                    <div class="promo-code-section mt-3 mb-3" style="padding: 12px 0; border-top: 1px dashed var(--line-border); border-bottom: 1px dashed var(--line-border);">
+                        <label class="form-label" style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--ink-soft); display: block; margin-bottom: 6px;">Have a Promo Code?</label>
+                        <div class="input-group">
+                            <input type="text" id="promoCodeInput" placeholder="Enter promo code" class="form-control" style="font-size: 13px; border-radius: 6px 0 0 6px;">
+                            <button type="button" class="btn btn-gold" id="applyPromoBtn" style="border-radius: 0 6px 6px 0; font-size: 13px; padding: 6px 14px;">Apply</button>
+                        </div>
+                        <div id="promoMessage" class="mt-2" style="font-size: 12px; display: none; font-weight: 500;"></div>
+                    </div>
+
+                    <div class="summary-total">
+                        <span class="lbl">Payable</span>
+                        <span class="amt" id="payableAmt">&#8377;{{ total_rental|default:total }}</span>
+                    </div>
+                    <button type="submit" form="placeForm" class="btn btn-gold btn-block mt-4">
+                        <i class="fa-solid fa-lock"></i> Confirm Rental
+                    </button>
+                    <p class="summary-note"><i class="fa-solid fa-shield-halved"></i> Your booking is confirmed instantly. Deposit refunded after return.</p>
+                </div>
+            </aside>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-regular fa-bag-shopping es-icon"></i>
+            <h3>Your cart is empty</h3>
+            <p>Add a look before heading to checkout.</p>
+            <a href="{% url 'user_shop' %}" class="btn btn-gold">Explore Collection</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% include "_footer.html" %}
+<script src="{% static 'js/browse.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    var toggleBtn = document.getElementById('toggleAddrForm');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function () {
+            var form = document.getElementById('addrForm');
+            var hidden = form.style.display === 'none';
+            form.style.display = hidden ? 'block' : 'none';
+            toggleBtn.innerHTML = hidden ? '<i class="fa-solid fa-minus"></i> Hide Address Form' : '<i class="fa-solid fa-plus"></i> Add New Address';
+        });
+    }
+    var start = document.getElementById('coRentalStart');
+    var days = document.getElementById('coRentalDays');
+    var ret = document.getElementById('coReturn');
+    function updateReturn() {
+        if (!start.value) { ret.value = 'Auto-calculated'; return; }
+        var d = new Date(start.value);
+        d.setDate(d.getDate() + (parseInt(days.value, 10) || 1) - 1);
+        ret.value = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+    if (start) { start.addEventListener('change', updateReturn); days.addEventListener('change', updateReturn); }
+    var today = new Date(); today.setDate(today.getDate() + 7);
+    if (start && !start.value) { start.value = today.toISOString().split('T')[0]; updateReturn(); }
+
+    // Promo Code Application Logic
+    const applyPromoBtn = document.getElementById('applyPromoBtn');
+    const promoCodeInput = document.getElementById('promoCodeInput');
+    const promoMessage = document.getElementById('promoMessage');
+    const promoDiscountRow = document.getElementById('promoDiscountRow');
+    const promoCodeLabel = document.getElementById('promoCodeLabel');
+    const promoDiscountVal = document.getElementById('promoDiscountVal');
+    const appliedPromoInput = document.getElementById('appliedPromoInput');
+    const payableAmt = document.getElementById('payableAmt');
+
+    if (applyPromoBtn && promoCodeInput) {
+        applyPromoBtn.addEventListener('click', function () {
+            const code = promoCodeInput.value.trim();
+            if (!code) {
+                showPromoMessage("Please enter a promo code.", "error");
+                return;
+            }
+
+            const securityDeposit = parseFloat('{{ security_deposit }}') || 0;
+            const totalRental = parseFloat('{{ total_rental }}') || 0;
+            const subtotal = totalRental - securityDeposit;
+
+            fetch(`/user/api/promo/validate/?code=${encodeURIComponent(code)}&subtotal=${subtotal}`)
+                .then(res => {
+                    if (!res.ok) {
+                        return res.json().then(err => { throw new Error(err.message || "Invalid promo code"); });
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.status === "success") {
+                        // Apply coupon success
+                        appliedPromoInput.value = data.code;
+                        promoCodeLabel.innerText = data.code;
+                        promoDiscountVal.innerText = data.discount_amount.toFixed(2);
+                        promoDiscountRow.style.display = 'flex';
+                        
+                        const grandTotal = data.new_total + securityDeposit;
+                        payableAmt.innerHTML = '&#8377;' + grandTotal.toFixed(2);
+
+                        showPromoMessage(`Promo "${data.code}" applied! Discount: -₹${data.discount_amount.toFixed(2)}`, "success");
+                        applyPromoBtn.disabled = true;
+                        promoCodeInput.disabled = true;
+                    }
+                })
+                .catch(err => {
+                    showPromoMessage(err.message, "error");
+                    // Reset fields
+                    appliedPromoInput.value = "";
+                    promoDiscountRow.style.display = 'none';
+                    payableAmt.innerHTML = '&#8377;' + totalRental.toFixed(2);
+                });
+        });
+    }
+
+    function showPromoMessage(msg, type) {
+        promoMessage.textContent = msg;
+        promoMessage.style.display = 'block';
+        if (type === 'success') {
+            promoMessage.style.color = '#3c6e46';
+        } else {
+            promoMessage.style.color = '#a03a2c';
+        }
+    }
+</script>
+</body>
+</html>

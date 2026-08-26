@@ -1,0 +1,31 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.splash, name="splash"),
+    path("login/", views.user_login, name="user_login"),
+    path("register/", views.user_register, name="user_register"),
+    path("logout/", views.user_logout, name="user_logout"),
+    path("home/", views.user_landing, name="user_landing"),
+    path("shop/", views.user_shop, name="user_shop"),
+    path("browse/<str:gender_type>/", views.user_category_one, name="user_category_one"),
+    path("browse/occasion/<int:category_one_id>/", views.user_occasion, name="user_occasion"),
+    path("browse/<str:gender_type>/<int:category_one_id>/", views.user_category_two, name="user_category_two"),
+    path("browse/<str:gender_type>/<int:category_one_id>/<int:category_two_id>/", views.user_products, name="user_products"),
+    path("product/<int:product_id>/", views.user_product_detail, name="user_product_detail"),
+    path("wishlist/add/<int:product_id>/", views.add_to_wishlist, name="add_to_wishlist"),
+    path("wishlist/", views.user_wishlist, name="user_wishlist"),
+    path("cart/add/<int:product_id>/", views.add_to_cart, name="add_to_cart"),
+    path("cart/", views.user_cart, name="user_cart"),
+    path("cart/remove/<int:cart_id>/", views.cart_remove, name="cart_remove"),
+    path("cart/update/<int:cart_id>/", views.cart_update, name="cart_update"),
+    path("checkout/", views.checkout, name="checkout"),
+    path("bookings/", views.user_bookings, name="user_bookings"),
+    path("profile/", views.user_profile, name="user_profile"),
+    path("profile/edit/", views.profile_edit, name="profile_edit"),
+    path("checkout/address/default/<int:address_id>/", views.address_set_default, name="address_set_default"),
+    path("checkout/address/delete/<int:address_id>/", views.address_delete, name="address_delete"),
+    path("booking/cancel/<int:booking_id>/", views.booking_cancel, name="booking_cancel"),
+    path("product/<int:product_id>/feedback/", views.submit_feedback, name="submit_feedback"),
+    path("api/promo/validate/", views.api_validate_promo, name="api_validate_promo"),
+]

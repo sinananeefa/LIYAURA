@@ -1,0 +1,273 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} | LIYAURA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/liyaura.css' %}">
+</head>
+
+<body class="user-theme">
+    {% include "_navbar.html" %}
+    {% include "_flash.html" %}
+
+    <section class="pdp">
+        <div class="container">
+            <nav class="breadcrumb-bar">
+                <a href="{% url 'user_landing' %}">Home</a><span class="sep">/</span>
+                <a href="{% url 'user_category_one' product.category_2.gender_type %}">{% if product.category_2.gender_type == "bride" %}Bride{% else %}Groom{% endif %}</a><span class="sep">/</span>
+                <a href="{% url 'user_category_two' product.category_2.gender_type product.category_1.id %}">{{ product.category_1.name }}</a><span class="sep">/</span>
+                <a href="{% url 'user_products' product.category_2.gender_type product.category_1.id product.category_2.id %}">{{ product.category_2.name }}</a><span class="sep">/</span>
+                <span class="active">{{ product.name }}</span>
+            </nav>
+
+            <div class="pdp-layout">
+                <!-- ===== GALLERY ===== -->
+                <div class="pdp-gallery reveal">
+                    <div class="pdp-main" id="pdpZoom">
+                        {% if product.image_1 %}<img src="{{ product.image_1 }}" alt="{{ product.name }}" id="mainImage"
+                            loading="lazy">{% endif %}
+                        {% if product.discount_pct > 0 %}<span class="pdp-badge">{{ product.discount_pct }}%
+                            Off</span>{% endif %}
+                    </div>
+                    <div class="pdp-thumbs">
+                        {% if product.image_1 %}<button class="pdp-thumb active" type="button"
+                            onclick="changeImage('{{ product.image_1 }}', this)"><img src="{{ product.image_1 }}"
+                                alt="View 1" loading="lazy"></button>{% endif %}
+                        {% if product.image_2 %}<button class="pdp-thumb" type="button"
+                            onclick="changeImage('{{ product.image_2 }}', this)"><img src="{{ product.image_2 }}"
+                                alt="View 2" loading="lazy"></button>{% endif %}
+                        {% if product.image_3 %}<button class="pdp-thumb" type="button"
+                            onclick="changeImage('{{ product.image_3 }}', this)"><img src="{{ product.image_3 }}"
+                                alt="View 3" loading="lazy"></button>{% endif %}
+                    </div>
+                </div>
+
+                <!-- ===== INFO ===== -->
+                <div class="pdp-info reveal">
+                    <p class="pdp-cat">{{ product.category_1.name }} &middot; {{ product.category_2.name }}</p>
+                    <h1>{{ product.name }}</h1>
+                    <div class="pdp-rating">
+                        {% if product.rating > 0 %}
+                        <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                        <span class="num">{{ product.rating }}</span>
+                        <span class="sep">&bull;</span>
+                        {% endif %}
+                        <span class="count">{{ available_units }} unit{% if available_units != 1 %}s{% endif %} available</span>
+                    </div>
+
+                    <div class="pdp-price">
+                        <span class="pdp-rent gold">&#8377;{{ product.offer_price }}</span>
+                        <span class="pdp-per">/ day</span>
+                        {% if product.actual_price > product.offer_price %}<span class="pdp-orig">&#8377;{{ product.actual_price }}</span>{% endif %}
+                        {% if product.discount_pct > 0 %}<span class="pdp-disc">{{ product.discount_pct }}% off</span>{% endif %}
+                    </div>
+                    <p class="pdp-rental-note">Rental item &mdash; the price above is per day. Pick your dates below to
+                        check availability.</p>
+
+                    <p class="pdp-desc">{{ product.description }}</p>
+
+                    <form method="POST" action="{% url 'add_to_cart' product.id %}" id="rentForm">
+                        {% csrf_token %}
+
+                        <div class="pdp-block">
+                            <h4>Select Size</h4>
+                            <div class="size-row" id="sizeRow">
+                                {% for size in product.sizes %}
+                                <button type="button" class="size-pill {% if forloop.first %}selected{% endif %}"
+                                    data-size="{{ size }}">{{ size }}</button>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="size" id="sizeInput" value="{{ product.sizes.0 }}">
+                        </div>
+
+                        <div class="pdp-block">
+                            <h4>Rental Dates</h4>
+                            <div class="rental-row">
+                                <div class="field">
+                                    <label for="rentalStart">Rental Start Date</label>
+                                    <input type="date" class="form-control" id="rentalStart" name="rental_start"
+                                        required>
+                                </div>
+                                <div class="field">
+                                    <label for="rentalDays">Rental Duration</label>
+                                    <select class="form-select" id="rentalDays" name="rental_days">
+                                        {% for d in rental_duration_options %}
+                                        <option value="{{ d }}">{{ d }} day{% if d > 1 %}s{% endif %}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label for="returnDate">Return Date</label>
+                                    <input type="text" class="form-control" id="returnDate" value="&mdash;" readonly
+                                        disabled>
+                                </div>
+                                <div class="field">
+                                    <label for="quantity">Quantity</label>
+                                    <div class="quantity-row" id="qtyRow">
+                                        <button type="button" data-step="-1" aria-label="Decrease">&minus;</button>
+                                        <span id="qtyValue">1</span>
+                                        <button type="button" data-step="1" aria-label="Increase">+</button>
+                                    </div>
+                                    <input type="hidden" name="quantity" id="qtyInput" value="1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="availability-note neutral" id="availNote">
+                            <i class="fa-regular fa-circle-question"></i>
+                            <span>Select your rental dates to check availability.</span>
+                        </div>
+
+                        <div class="pdp-actions">
+                            <div class="pdp-actions-row" style="grid-template-columns: 1.15fr 1.35fr 1.35fr; gap: 8px;">
+                                <a href="{% url 'add_to_wishlist' product.id %}"
+                                    class="btn btn-outline {% if is_wishlisted %}active{% endif %}" style="padding: 12px 6px; font-size: 13px;">
+                                    <i class="fa-{% if is_wishlisted %}solid{% else %}regular{% endif %} fa-heart"></i>
+                                    {% if is_wishlisted %}Wishlisted{% else %}Wishlist{% endif %}
+                                </a>
+                                <button type="submit" name="action" value="add_to_cart" class="btn btn-outline" style="padding: 12px 6px; font-size: 13px; border-color: var(--gold-primary); color: var(--gold-dark);">
+                                    <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                                </button>
+                                <button type="submit" name="action" value="rent_now" class="btn btn-gold" id="rentNowBtn" style="padding: 12px 6px; font-size: 13px;">
+                                    <i class="fa-regular fa-calendar-check"></i> Rent Now
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="pdp-infoboxes">
+                        <div class="pdp-infobox">
+                            <i class="fa-solid fa-truck-fast"></i>
+                            <div>
+                                <h5>Delivery</h5>
+                                <p>Free shipping on rentals over &#8377;3,000. Delivered 2 days before your event.</p>
+                            </div>
+                        </div>
+                        <div class="pdp-infobox">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <div>
+                                <h5>Return</h5>
+                                <p>Return within 3 days of your event. Prepaid return label included.</p>
+                            </div>
+                        </div>
+                        <div class="pdp-infobox">
+                            <i class="fa-solid fa-spray-can-sparkles"></i>
+                            <div>
+                                <h5>Cleaning</h5>
+                                <p>Every outfit is professionally cleaned and steamed before rental.</p>
+                            </div>
+                        </div>
+                        <div class="pdp-infobox">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <div>
+                                <h5>Security Deposit</h5>
+                                <p>&#8377;2,000 fully refundable deposit, released after return.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== REVIEWS & FEEDBACK ===== -->
+            <div class="feedback-section mt-5 pt-5" style="border-top:1px solid var(--line-soft);">
+                <div class="section-head reveal">
+                    <p class="eyebrow">Customer Experience</p>
+                    <h2 class="section-title">Product <i>Reviews</i> ({{ feedbacks_count }})</h2>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:40px; margin-top:20px;">
+                    <!-- Left: Reviews List -->
+                    <div class="feedback-list">
+                        {% for f in feedbacks %}
+                        <div class="feedback-item" style="padding:16px; border:1px solid var(--line-soft); border-radius:12px; background:var(--white); margin-bottom:14px; box-shadow:var(--shadow-sm);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <div>
+                                    <strong class="feedback-user" style="color:var(--gold-dark); font-size:14px;">{{ f.user.username }}</strong>
+                                    <span class="stars" style="color:#C9A96A; font-size:12px; margin-left:8px;">
+                                        {% if f.rating >= 1 %}&#9733;{% endif %}
+                                        {% if f.rating >= 2 %}&#9733;{% endif %}
+                                        {% if f.rating >= 3 %}&#9733;{% endif %}
+                                        {% if f.rating >= 4 %}&#9733;{% endif %}
+                                        {% if f.rating >= 5 %}&#9733;{% endif %}
+                                    </span>
+                                </div>
+                                <span style="font-size:11px; color:var(--ink-soft);">{{ f.created_at|date:"d M Y" }}</span>
+                            </div>
+                            <p style="margin:0; font-size:13px; color:var(--ink); line-height:1.5;">&ldquo;{{ f.feedback }}&rdquo;</p>
+                        </div>
+                        {% empty %}
+                        <div class="no-feedback" style="text-align:center; padding:40px 0; color:var(--ink-soft);">
+                            <i class="fa-regular fa-comments" style="font-size:32px; color:var(--line); margin-bottom:12px; display:block;"></i>
+                            No reviews submitted for this garment yet. Be the first to share your experience!
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Right: Submit Form -->
+                    <div class="feedback-form-container">
+                        <div class="card-luxury" style="padding:24px; border:1px solid var(--line-soft); border-radius:12px; background:var(--white); box-shadow:var(--shadow-sm);">
+                            <h4 style="font-family:var(--font-serif); font-weight:700; color:var(--ink); margin-bottom:8px;">Write a Review</h4>
+                            <p style="font-size:12.5px; color:var(--ink-soft); margin-bottom:20px;">Share your rental experience and styling tips with other users.</p>
+                            
+                            {% if user %}
+                            <form method="POST" action="{% url 'submit_feedback' product.id %}">
+                                {% csrf_token %}
+                                <div class="form-group mb-3">
+                                    <label class="form-label" style="font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); display:block; margin-bottom:6px;">Rating</label>
+                                    <select name="rating" class="form-select" style="border-radius:8px; border-color:var(--line); font-size:13px; max-width:165px;" required>
+                                        <option value="5">★★★★★ (5/5)</option>
+                                        <option value="4">★★★★☆ (4/5)</option>
+                                        <option value="3">★★★☆☆ (3/5)</option>
+                                        <option value="2">★★☆☆☆ (2/5)</option>
+                                        <option value="1">★☆☆☆☆ (1/5)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label" style="font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); display:block; margin-bottom:6px;">Your Feedback</label>
+                                    <textarea name="feedback" rows="4" class="form-control" placeholder="What did you think of the fit, fabric quality, and overall look?" style="border-radius:8px; border-color:var(--line); font-size:13px;" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-gold" style="width:100%; border-radius:8px; font-size:13px; font-weight:600; text-transform:uppercase; padding:10px 0;">Submit Review</button>
+                            </form>
+                            {% else %}
+                            <div style="text-align:center; padding:20px 0;">
+                                <p style="font-size:13px; color:var(--ink-soft); margin-bottom:14px;">You must be signed in to submit product feedback.</p>
+                                <a href="{% url 'user_login' %}?next={{ request.path|urlencode }}" class="btn btn-outline" style="font-size:12.5px; font-weight:600; padding:8px 20px; border-radius:8px;">Sign In &rarr;</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if related_products %}
+            <div class="related-section mt-5 pt-5" style="border-top:1px solid var(--line-soft);">
+                <div class="section-head reveal">
+                    <p class="eyebrow">Complete The Look</p>
+                    <h2 class="section-title">You May <i>Also Love</i></h2>
+                </div>
+                <div class="product-grid">
+                    {% for rp in related_products %}
+                    {% include "_product_card.html" with product=rp %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    {% include "_footer.html" %}
+    <script src="{% static 'js/browse.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        var bookedRanges = {{ booked_json| safe }};
+        var availableUnits = {{ available_units }};
+        var productQty = {{ product.quantity }};
+    </script>
+</body>
+
+</html>
