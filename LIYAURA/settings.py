@@ -9,8 +9,7 @@ SECRET_KEY = os.environ.get(
 )
 
 DEBUG = True
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = ["liyaura.onrender.com"]
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -85,6 +84,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
