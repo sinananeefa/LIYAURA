@@ -10,3 +10,14 @@ env/
 
 node_modules/
     
+catalog_data.json
+
+catalog_data_clean.json
+
+data.json
+
+owner_data.json
+
+owner_data_utf8.json
+
+owner_data_clean.json
