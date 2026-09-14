@@ -6,8 +6,6 @@ import tempfile
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 
-from OWNER.models import Product
-
 
 class Command(BaseCommand):
     help = "Import catalog fixture from CATALOG_FIXTURE_B64"
@@ -23,25 +21,15 @@ class Command(BaseCommand):
             )
             return
 
-        if Product.objects.exists():
-            self.stdout.write(
-                self.style.WARNING(
-                    f"Catalog already exists ({Product.objects.count()} products). "
-                    "Skipping import."
-                )
-            )
-            return
-
         fixture_path = None
 
         try:
-            # Decode Base64
             compressed = base64.b64decode(encoded)
 
-            # Decompress GZIP and remove UTF-8 BOM if present
-            fixture_data = gzip.decompress(compressed).lstrip(b"\xef\xbb\xbf")
+            fixture_data = gzip.decompress(compressed).lstrip(
+                b"\xef\xbb\xbf"
+            )
 
-            # Write the cleaned JSON to a temporary file
             with tempfile.NamedTemporaryFile(
                 mode="wb",
                 suffix=".json",
@@ -52,7 +40,6 @@ class Command(BaseCommand):
 
             self.stdout.write("Loading catalog fixture...")
 
-            # Load the catalog into the database
             call_command(
                 "loaddata",
                 fixture_path,
@@ -61,8 +48,7 @@ class Command(BaseCommand):
 
             self.stdout.write(
                 self.style.SUCCESS(
-                    f"Catalog imported successfully. "
-                    f"Products: {Product.objects.count()}"
+                    "Catalog imported successfully."
                 )
             )
 
@@ -75,6 +61,5 @@ class Command(BaseCommand):
             raise
 
         finally:
-            # Delete temporary fixture file
             if fixture_path and os.path.exists(fixture_path):
                 os.remove(fixture_path)
