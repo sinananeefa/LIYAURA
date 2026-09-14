@@ -62,8 +62,8 @@ class Command(BaseCommand):
                     if item["model"].lower() == "owner.categorytwo":
                         fields = item["fields"].copy()
 
-                        if "category_one" in fields:
-                            fields["category_one_id"] = fields.pop("category_one")
+                       if "category_1" in fields:
+    fields["category_1_id"] = fields.pop("category_1")
 
                         obj, created = CategoryTwo.objects.update_or_create(
                             pk=item["pk"],
