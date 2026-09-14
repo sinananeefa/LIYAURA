@@ -23,3 +23,8 @@ owner_data_utf8.json
 owner_data_clean.json
 
 catalog_b64.txt
+
+catalog_cloudinary.json
+catalog_cloudinary_clean.json
+catalog_cloudinary_b64.txt
+migration.log
