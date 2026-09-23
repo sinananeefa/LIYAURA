@@ -1082,10 +1082,72 @@ def section_delete(request, section_id):
         messages.success(request, "Section deleted successfully.")
     return redirect(f"{reverse('owner_dashboard')}#sections")
 @_owner_required
-def staff_add(request): return redirect(f"{reverse('owner_dashboard')}#settings")
+def staff_add(request):
+    if request.method == "POST":
+        staff_name = request.POST.get("staff_name", "").strip()
+        username = request.POST.get("username", "").strip()
+        phone_no = request.POST.get("phone_no", "").strip()
+        password = request.POST.get("password", "")
+        salary = request.POST.get("salary", "").strip()
+
+        if not all([staff_name, username, phone_no, password, salary]):
+            messages.error(request, "All staff fields are required.")
+        elif Staff.objects.filter(username=username).exists():
+            messages.error(request, "That staff username is already in use.")
+        elif Staff.objects.filter(phone_no=phone_no).exists():
+            messages.error(request, "That staff phone number is already in use.")
+        else:
+            try:
+                Staff.objects.create(
+                    staff_name=staff_name,
+                    username=username,
+                    phone_no=phone_no,
+                    password=password,
+                    salary=salary,
+                )
+                messages.success(request, f"Staff account '{username}' created. Share these credentials with the staff member.")
+            except (TypeError, InvalidOperation):
+                messages.error(request, "Salary must be a valid number.")
+    return redirect(f"{reverse('owner_dashboard')}#settings")
+
+
 @_owner_required
-def staff_edit(request, staff_id): return redirect(f"{reverse('owner_dashboard')}#settings")
+def staff_edit(request, staff_id):
+    staff = get_object_or_404(Staff, id=staff_id)
+    if request.method == "POST":
+        staff_name = request.POST.get("staff_name", "").strip()
+        username = request.POST.get("username", "").strip()
+        phone_no = request.POST.get("phone_no", "").strip()
+        password = request.POST.get("password", "")
+        salary = request.POST.get("salary", "").strip()
+
+        if not all([staff_name, username, phone_no, salary]):
+            messages.error(request, "Name, username, phone number, and salary are required.")
+        elif Staff.objects.filter(username=username).exclude(id=staff_id).exists():
+            messages.error(request, "That staff username is already in use.")
+        elif Staff.objects.filter(phone_no=phone_no).exclude(id=staff_id).exists():
+            messages.error(request, "That staff phone number is already in use.")
+        else:
+            try:
+                staff.staff_name = staff_name
+                staff.username = username
+                staff.phone_no = phone_no
+                staff.salary = salary
+                if password:
+                    staff.password = password
+                staff.save()
+                messages.success(request, f"Staff account '{username}' updated.")
+            except (TypeError, InvalidOperation):
+                messages.error(request, "Salary must be a valid number.")
+    return redirect(f"{reverse('owner_dashboard')}#settings")
+
+
 @_owner_required
-def staff_delete(request, staff_id): return redirect(f"{reverse('owner_dashboard')}#settings")
+def staff_delete(request, staff_id):
+    staff = get_object_or_404(Staff, id=staff_id)
+    if request.method == "POST":
+        staff.delete()
+        messages.success(request, "Staff account deleted.")
+    return redirect(f"{reverse('owner_dashboard')}#settings")
 @_owner_required
 def booking_status_update(request, booking_id): return api_update_booking_status(request, booking_id)

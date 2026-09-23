@@ -1059,6 +1059,66 @@ textarea {
   box-shadow: 0 0 0 3px var(--gold-subtle);
 }
 
+/* Staff management keeps its form and credential table usable on narrow screens. */
+.staff-credentials-card,
+.staff-accounts-card {
+  width: 100%;
+}
+
+.staff-credentials-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: end;
+}
+
+.staff-credentials-form .btn-primary-luxury {
+  min-height: 44px;
+  width: 100%;
+}
+
+.staff-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.staff-accounts-table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.staff-accounts-table th,
+.staff-accounts-table td {
+  padding: 13px 12px;
+  border-bottom: 1px solid var(--line-border-subtle);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.staff-accounts-table th {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.staff-accounts-table td {
+  color: var(--text-main);
+  font-size: 13px;
+}
+
+.staff-actions-cell {
+  white-space: nowrap;
+}
+
+.staff-actions-cell form {
+  display: inline;
+}
+
 /* Gemini AI Generator Badge & Assistant */
 .gemini-generator-box {
   background: linear-gradient(135deg, rgba(185, 151, 91, 0.08), rgba(216, 195, 165, 0.15));
@@ -1144,7 +1204,7 @@ textarea {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .sidebar {
     transform: translateX(-100%);
   }
@@ -1168,6 +1228,86 @@ textarea {
 
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .staff-credentials-card,
+  .staff-accounts-card {
+    padding: 18px;
+    border-radius: var(--radius-md);
+  }
+
+  .staff-credentials-form {
+    grid-template-columns: 1fr;
+    gap: 13px;
+  }
+
+  .staff-credentials-card .card-heading,
+  .staff-accounts-card .card-heading {
+    font-size: 18px;
+  }
+
+  .staff-table-scroll {
+    overflow: visible;
+  }
+
+  .staff-accounts-table,
+  .staff-accounts-table tbody,
+  .staff-accounts-table tr,
+  .staff-accounts-table td {
+    display: block;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .staff-accounts-table {
+    border-collapse: separate;
+  }
+
+  .staff-accounts-table thead {
+    display: none;
+  }
+
+  .staff-accounts-table tr {
+    margin-bottom: 14px;
+    padding: 10px 13px;
+    border: 1px solid var(--line-border);
+    border-radius: 12px;
+    background: var(--bg-subtle);
+  }
+
+  .staff-accounts-table td {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    padding: 9px 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    border-bottom: 1px solid var(--line-border-subtle);
+  }
+
+  .staff-accounts-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .staff-accounts-table td::before {
+    content: attr(data-label);
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .staff-actions-cell {
+    display: flex !important;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .staff-actions-cell::before {
+    width: 92px;
+    flex-shrink: 0;
   }
 }
 

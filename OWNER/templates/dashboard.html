@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LIYAURA &middot; Owner Command Center</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=staff-responsive-1">
 </head>
 <body>
     <div class="app-container">
@@ -1031,7 +1031,7 @@
                      TAB 13: SETTINGS
                      ========================================== -->
                 <section class="tab-panel" id="tab-settings">
-                    <div class="card-luxury" style="max-width:700px;">
+                    <div class="card-luxury" style="max-width:1000px;">
                         <h2 class="card-heading" style="margin-bottom:24px;">Boutique Configuration</h2>
                         <div style="display:flex; flex-direction:column; gap:20px;">
                             <div class="form-group">
@@ -1050,6 +1050,44 @@
                                 <input type="text" class="form-control" value="₹2,000 (Refundable upon inspection)">
                             </div>
                             <button type="button" class="btn-primary-luxury" style="align-self:flex-start;">Save Configuration</button>
+                        </div>
+                    </div>
+
+                    <div class="card-luxury staff-credentials-card" style="max-width:1000px; margin-top:24px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:20px;">
+                            <div>
+                                <h2 class="card-heading">Staff Credentials</h2>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:5px;">Create the username and password staff use at <strong>/staff/</strong>.</p>
+                            </div>
+                        </div>
+                        <form action="{% url 'staff_add' %}" method="POST" class="staff-credentials-form">
+                            {% csrf_token %}
+                            <div class="form-group"><label class="form-label">Staff Name</label><input type="text" name="staff_name" class="form-control" required></div>
+                            <div class="form-group"><label class="form-label">Username</label><input type="text" name="username" class="form-control" required autocomplete="off"></div>
+                            <div class="form-group"><label class="form-label">Phone Number</label><input type="text" name="phone_no" class="form-control" required></div>
+                            <div class="form-group"><label class="form-label">Password</label><input type="password" name="password" class="form-control" required autocomplete="new-password"></div>
+                            <div class="form-group"><label class="form-label">Salary</label><input type="number" name="salary" class="form-control" min="0" step="0.01" required></div>
+                            <button type="submit" class="btn-primary-luxury">Create Staff Credentials</button>
+                        </form>
+                    </div>
+
+                    <div class="card-luxury staff-accounts-card" style="max-width:1000px; margin-top:24px;">
+                        <h3 class="card-heading" style="margin-bottom:16px;">Issued Staff Accounts ({{ staff_members|length }})</h3>
+                        <div class="staff-table-scroll">
+                        <table class="data-table staff-accounts-table">
+                            <thead><tr><th>Name</th><th>Username</th><th>Password</th><th>Phone</th><th>Salary</th><th>Actions</th></tr></thead>
+                            <tbody>
+                                {% for staff in staff_members %}
+                                <tr>
+                                    <td data-label="Name">{{ staff.staff_name }}</td><td data-label="Username">{{ staff.username }}</td><td data-label="Password">{{ staff.password }}</td><td data-label="Phone">{{ staff.phone_no }}</td><td data-label="Salary">{{ staff.salary }}</td>
+                                    <td data-label="Actions" class="staff-actions-cell">
+                                        <button type="button" class="action-btn-circle" title="Edit staff" onclick="openEditStaffDrawer({{ staff.id }}, '{{ staff.staff_name|escapejs }}', '{{ staff.username|escapejs }}', '{{ staff.phone_no|escapejs }}', '{{ staff.salary|escapejs }}')"><i class="fa-solid fa-pen"></i></button>
+                                        <form action="{% url 'staff_delete' staff.id %}" method="POST" style="display:inline;">{% csrf_token %}<button type="submit" class="action-btn-circle" title="Delete staff" onclick="return confirm('Delete this staff account?');"><i class="fa-solid fa-trash"></i></button></form>
+                                    </td>
+                                </tr>
+                                {% empty %}<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">No staff credentials issued yet.</td></tr>{% endfor %}
+                            </tbody>
+                        </table>
                         </div>
                     </div>
                 </section>
@@ -1455,6 +1493,25 @@
                 <button type="button" class="btn-secondary-luxury" data-close-drawer>Cancel</button>
                 <button type="submit" class="btn-primary-luxury">Update Section</button>
             </div>
+        </form>
+    </div>
+
+    <!-- 8. Edit Staff Drawer -->
+    <div class="drawer" id="staffEditDrawer">
+        <div class="drawer-header">
+            <h3 class="drawer-title" id="staffEditDrawerTitle">Edit Staff Credentials</h3>
+            <button type="button" class="drawer-close-btn" data-close-drawer><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="staffEditForm" action="" method="POST" style="display:flex; flex-direction:column; flex:1; min-height:0; overflow:hidden;">
+            {% csrf_token %}
+            <div class="drawer-body">
+                <div class="form-group"><label class="form-label">Staff Name</label><input type="text" name="staff_name" id="staff_edit_name" class="form-control" required></div>
+                <div class="form-group"><label class="form-label">Username</label><input type="text" name="username" id="staff_edit_username" class="form-control" required></div>
+                <div class="form-group"><label class="form-label">Phone Number</label><input type="text" name="phone_no" id="staff_edit_phone" class="form-control" required></div>
+                <div class="form-group"><label class="form-label">New Password <span style="font-weight:400; color:var(--text-muted);">(leave blank to keep current)</span></label><input type="password" name="password" class="form-control" autocomplete="new-password"></div>
+                <div class="form-group"><label class="form-label">Salary</label><input type="number" name="salary" id="staff_edit_salary" class="form-control" min="0" step="0.01" required></div>
+            </div>
+            <div class="drawer-footer"><button type="button" class="btn-secondary-luxury" data-close-drawer>Cancel</button><button type="submit" class="btn-primary-luxury">Update Staff</button></div>
         </form>
     </div>
 

@@ -537,6 +537,20 @@ document.addEventListener("DOMContentLoaded", function () {
         if (drawerBackdrop) drawerBackdrop.classList.add("show");
     };
 
+    // --- Staff Drawer ---
+    const staffEditDrawer = document.getElementById("staffEditDrawer");
+    window.openEditStaffDrawer = function (id, name, username, phone, salary) {
+        if (!staffEditDrawer) return;
+        document.getElementById("staffEditDrawerTitle").innerText = `Edit Staff: ${name}`;
+        document.getElementById("staffEditForm").action = `/owner/staff/edit/${id}/`;
+        document.getElementById("staff_edit_name").value = name;
+        document.getElementById("staff_edit_username").value = username;
+        document.getElementById("staff_edit_phone").value = phone;
+        document.getElementById("staff_edit_salary").value = salary;
+        staffEditDrawer.classList.add("show");
+        if (drawerBackdrop) drawerBackdrop.classList.add("show");
+    };
+
     window.previewDrawerImage = function (input, previewId) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
