@@ -1,0 +1,295 @@
+{% load static %}
+<header class="mega-header" id="liyauraHeader">
+
+    <!-- ===== ROW 1: icons + centered logo ===== -->
+    <div class="mh-container">
+        <div class="mh-top">
+            <div class="mh-side mh-left">
+                <button type="button" class="mh-icon mh-burger" id="mhBurger" aria-label="Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a class="mh-logo" href="{% url 'user_landing' %}" aria-label="LIYAURA Home">
+                    <img src="{% static 'images/liyaura-logo.png' %}" alt="LIYAURA Emblem" class="mh-logo-img">
+                    <span class="logo-text-lux">LIYAURA</span>
+                </a>
+            </div>
+
+            <div class="mh-side mh-right">
+                <button type="button" class="mh-icon mh-search-btn" id="searchToggle" aria-label="Search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <a class="mh-icon" href="{% url 'user_wishlist' %}" aria-label="Wishlist">
+                    <i class="fa-regular fa-heart"></i>
+                    {% if wishlist_count %}<span class="nav-badge">{{ wishlist_count }}</span>{% endif %}
+                </a>
+                <a class="mh-icon" href="{% url 'user_cart' %}" aria-label="Shopping Bag">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    {% if cart_count %}<span class="nav-badge">{{ cart_count }}</span>{% endif %}
+                </a>
+                {% if nav_user %}
+                <a class="mh-icon" href="{% url 'user_profile' %}" aria-label="Profile"><i
+                        class="fa-regular fa-user"></i></a>
+                {% else %}
+                <a class="mh-icon" href="{% url 'user_login' %}" aria-label="Sign In"><i
+                        class="fa-solid fa-user"></i></a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ===== ROW 2: centered navigation ===== -->
+        <nav class="mh-nav" aria-label="Primary">
+            <ul class="mh-menu">
+                <li class="mh-item {% if request.path == '/' or request.path == '/user/' %}active{% endif %}">
+                    <a href="{% url 'user_landing' %}">Home</a>
+                </li>
+                <li class="mh-item {% if request.path == '/user/shop/' and not request.GET.gender %}active{% endif %}">
+                    <a href="{% url 'user_shop' %}">Shop</a>
+                </li>
+                <li class="mh-item {% if request.GET.gender == 'bride' %}active{% endif %}">
+                    <a href="{% url 'user_shop' %}?gender=bride">Bride</a>
+                </li>
+                <li class="mh-item {% if request.GET.gender == 'groom' %}active{% endif %}">
+                    <a href="{% url 'user_shop' %}?gender=groom">Groom</a>
+                </li>
+                <li class="mh-item">
+                    <a href="{% url 'user_landing' %}#occasions">Occasions</a>
+                </li>
+                <li class="mh-item mh-trigger" id="megaTrigger">
+                    <a href="{% url 'user_shop' %}" class="mh-trigger-link">Rent Outfits <i
+                            class="fa-solid fa-chevron-down mh-chev"></i></a>
+
+                    <!-- ===== MEGA MENU ===== -->
+                    <div class="mega-panel" id="megaPanel">
+                        <div class="mega-inner">
+
+                            <div class="mega-col">
+                                <p class="mega-head">Bridal Rental</p>
+                                <ul class="mega-links">
+                                    <li><a href="{% url 'user_shop' %}?gender=bride">Bride Collection</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=Lehenga&gender=bride">Bridal Lehenga</a>
+                                    </li>
+                                    <li><a href="{% url 'user_shop' %}?category=Saree&gender=bride">Designer Saree</a>
+                                    </li>
+                                    <li><a href="{% url 'user_shop' %}?category=Gown&gender=bride">Reception Gown</a>
+                                    </li>
+                                    <li><a href="{% url 'user_shop' %}?category=Anarkali&gender=bride">Anarkali</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=Sharara&gender=bride">Sharara</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=Gharara&gender=bride">Gharara</a></li>
+                                    <li><a
+                                            href="{% url 'user_shop' %}?category=Indo-Western&gender=bride">Indo-Western</a>
+                                    </li>
+                                    <li><a href="{% url 'user_shop' %}?category=Saree&gender=bride">Traditional
+                                            Saree</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=Gown&gender=bride">Bridal Gown</a></li>
+                                </ul>
+                                <a class="mega-viewall" href="{% url 'user_shop' %}?gender=bride">View All <i
+                                        class="fa-solid fa-arrow-right-long"></i></a>
+                            </div>
+
+                            <div class="mega-col">
+                                <p class="mega-head">Groom Rental</p>
+                                <ul class="mega-links">
+                                    <li><a href="{% url 'user_shop' %}?gender=groom">Groom Collection</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=Sherwani&gender=groom">Sherwani</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=Sherwani&gender=groom">Designer
+                                            Sherwani</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=Jodhpuri&gender=groom">Jodhpuri Suit</a>
+                                    </li>
+                                    <li><a href="{% url 'user_shop' %}?category=Tuxedo&gender=groom">Tuxedo</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=Suit&gender=groom">Three-Piece Suit</a>
+                                    </li>
+                                    <li><a href="{% url 'user_shop' %}?category=Suit&gender=groom">Suit</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=Kurta&gender=groom">Kurta Set</a></li>
+                                    <li><a
+                                            href="{% url 'user_shop' %}?category=Indo-Western&gender=groom">Indo-Western</a>
+                                    </li>
+                                    <li><a href="{% url 'user_shop' %}?category=Dhoti&gender=groom">Dhoti Set</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=Pathani&gender=groom">Pathani Suit</a>
+                                    </li>
+                                </ul>
+                                <a class="mega-viewall" href="{% url 'user_shop' %}?gender=groom">View All <i
+                                        class="fa-solid fa-arrow-right-long"></i></a>
+                            </div>
+
+                            <div class="mega-col">
+                                <p class="mega-head">Rent by Category</p>
+                                <ul class="mega-links mega-col-grid">
+                                    <li><a href="{% url 'user_shop' %}?category=lehenga">Lehenga</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=saree">Saree</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=gown">Gown</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=anarkali">Anarkali</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=sharara">Sharara</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=gharara">Gharara</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=sherwani">Sherwani</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=suit">Suit</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=tuxedo">Tuxedo</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=kurta">Kurta</a></li>
+                                    <li><a href="{% url 'user_shop' %}?category=indo">Indo-Western</a></li>
+                                </ul>
+                                <a class="mega-viewall" href="{% url 'user_shop' %}">View All <i
+                                        class="fa-solid fa-arrow-right-long"></i></a>
+                            </div>
+
+                            <div class="mega-col">
+                                <p class="mega-head">Rent by Occasion</p>
+                                <ul class="mega-links">
+                                    {% for oc in nav_occasions %}
+                                    <li><a href="{% url 'user_shop' %}?occasion={{ oc.id }}">{{ oc.name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                                <a class="mega-viewall" href="{% url 'user_shop' %}">View All <i
+                                        class="fa-solid fa-arrow-right-long"></i></a>
+                            </div>
+
+                            <div class="mega-col">
+                                <p class="mega-head">Rent by Price</p>
+                                <ul class="mega-links">
+                                    <li><a href="{% url 'user_shop' %}?price=under-2000">Under &#8377;2,000</a></li>
+                                    <li><a href="{% url 'user_shop' %}?price=under-5000">Under &#8377;5,000</a></li>
+                                    <li><a href="{% url 'user_shop' %}?price=under-10000">Under &#8377;10,000</a></li>
+                                    <li><a href="{% url 'user_shop' %}?price=under-15000">Under &#8377;15,000</a></li>
+                                    <li><a href="{% url 'user_shop' %}?price=8000-plus">Premium Collection</a></li>
+                                </ul>
+                                <a class="mega-viewall" href="{% url 'user_shop' %}">Shop All <i
+                                        class="fa-solid fa-arrow-right-long"></i></a>
+                            </div>
+
+                        </div>
+                    </div>
+                </li>
+                <li class="mh-item">
+                    <a href="{% url 'user_landing' %}#about">About Us</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- ===== SEARCH OVERLAY ===== -->
+    <div class="mh-search" id="searchOverlay">
+        <div class="mh-search-backdrop" id="searchBackdrop"></div>
+        <div class="mh-search-inner">
+            <div class="mh-search-head">
+                <span class="mh-search-eyebrow">CURATED COLLECTION SEARCH</span>
+                <h3 class="mh-search-title">WHAT ARE YOU LOOKING FOR?</h3>
+            </div>
+            <form action="{% url 'user_shop' %}" method="GET" class="mh-search-form">
+                <i class="fa-solid fa-magnifying-glass mh-form-icon"></i>
+                <input type="search" name="q" class="mh-search-input"
+                    placeholder="Search lehengas, sherwanis, sarees, tuxedos..." autocomplete="off" aria-label="Search">
+                <button type="button" class="mh-search-close" id="searchClose" aria-label="Close search"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </form>
+            <div class="mh-suggestions">
+                <span class="mh-sugg-label">SUGGESTED SEARCHES:</span>
+                <div class="mh-sugg-pills">
+                    <a href="{% url 'user_shop' %}?q=Bridal+Lehenga" class="sugg-pill">Bridal Lehenga</a>
+                    <a href="{% url 'user_shop' %}?q=Sherwani" class="sugg-pill">Sherwani</a>
+                    <a href="{% url 'user_shop' %}?q=Reception" class="sugg-pill">Reception</a>
+                    <a href="{% url 'user_shop' %}?q=Engagement" class="sugg-pill">Engagement</a>
+                    <a href="{% url 'user_shop' %}?q=Haldi" class="sugg-pill">Haldi</a>
+                    <a href="{% url 'user_shop' %}?q=Mehendi" class="sugg-pill">Mehendi</a>
+                    <a href="{% url 'user_shop' %}?q=Tuxedo" class="sugg-pill">Tuxedo</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MOBILE MENU ===== -->
+    <div class="mh-mobile" id="mhMobile">
+        <nav>
+            <a href="{% url 'user_landing' %}">Home</a>
+            <a href="{% url 'user_shop' %}">Shop</a>
+            <a href="{% url 'user_shop' %}?gender=bride">Bride</a>
+            <a href="{% url 'user_shop' %}?gender=groom">Groom</a>
+            <a href="{% url 'user_landing' %}#occasions">Occasions</a>
+
+            <div class="mm-group">
+                <button type="button" class="mm-group-btn" data-target="mmRent">Rent Outfits <i
+                        class="fa-solid fa-chevron-down"></i></button>
+                <div class="mm-group-body" id="mmRent">
+                    <div class="mm-sub">
+                        <button type="button" class="mm-sub-btn" data-target="mmBridal">Bride Rental <i
+                                class="fa-solid fa-chevron-down"></i></button>
+                        <div class="mm-sub-body" id="mmBridal">
+                            <a href="{% url 'user_shop' %}?category=Lehenga&gender=bride">Bridal Lehenga</a>
+                            <a href="{% url 'user_shop' %}?category=Saree&gender=bride">Designer Saree</a>
+                            <a href="{% url 'user_shop' %}?category=Gown&gender=bride">Reception Gown</a>
+                            <a href="{% url 'user_shop' %}?category=Anarkali&gender=bride">Anarkali</a>
+                            <a href="{% url 'user_shop' %}?category=Sharara&gender=bride">Sharara</a>
+                            <a href="{% url 'user_shop' %}?category=Gharara&gender=bride">Gharara</a>
+                            <a href="{% url 'user_shop' %}?category=Indo-Western&gender=bride">Indo-Western</a>
+                            <a href="{% url 'user_shop' %}?category=Saree&gender=bride">Traditional Saree</a>
+                            <a href="{% url 'user_shop' %}?category=Gown&gender=bride">Bridal Gown</a>
+                        </div>
+                    </div>
+                    <div class="mm-sub">
+                        <button type="button" class="mm-sub-btn" data-target="mmGroom">Groom Rental <i
+                                class="fa-solid fa-chevron-down"></i></button>
+                        <div class="mm-sub-body" id="mmGroom">
+                            <a href="{% url 'user_shop' %}?category=Sherwani&gender=groom">Sherwani</a>
+                            <a href="{% url 'user_shop' %}?category=Sherwani&gender=groom">Designer Sherwani</a>
+                            <a href="{% url 'user_shop' %}?category=Jodhpuri&gender=groom">Jodhpuri Suit</a>
+                            <a href="{% url 'user_shop' %}?category=Tuxedo&gender=groom">Tuxedo</a>
+                            <a href="{% url 'user_shop' %}?category=Suit&gender=groom">Three-Piece Suit</a>
+                            <a href="{% url 'user_shop' %}?category=Suit&gender=groom">Suit</a>
+                            <a href="{% url 'user_shop' %}?category=Kurta&gender=groom">Kurta Set</a>
+                            <a href="{% url 'user_shop' %}?category=Indo-Western&gender=groom">Indo-Western</a>
+                            <a href="{% url 'user_shop' %}?category=Dhoti&gender=groom">Dhoti Set</a>
+                            <a href="{% url 'user_shop' %}?category=Pathani&gender=groom">Pathani Suit</a>
+                        </div>
+                    </div>
+                    <div class="mm-sub">
+                        <button type="button" class="mm-sub-btn" data-target="mmCat">By Category <i
+                                class="fa-solid fa-chevron-down"></i></button>
+                        <div class="mm-sub-body" id="mmCat">
+                            <a href="{% url 'user_shop' %}?category=lehenga">Lehenga</a>
+                            <a href="{% url 'user_shop' %}?category=saree">Saree</a>
+                            <a href="{% url 'user_shop' %}?category=gown">Gown</a>
+                            <a href="{% url 'user_shop' %}?category=anarkali">Anarkali</a>
+                            <a href="{% url 'user_shop' %}?category=sharara">Sharara</a>
+                            <a href="{% url 'user_shop' %}?category=gharara">Gharara</a>
+                            <a href="{% url 'user_shop' %}?category=sherwani">Sherwani</a>
+                            <a href="{% url 'user_shop' %}?category=suit">Suit</a>
+                            <a href="{% url 'user_shop' %}?category=tuxedo">Tuxedo</a>
+                            <a href="{% url 'user_shop' %}?category=kurta">Kurta</a>
+                            <a href="{% url 'user_shop' %}?category=indo">Indo-Western</a>
+                        </div>
+                    </div>
+                    <div class="mm-sub">
+                        <button type="button" class="mm-sub-btn" data-target="mmOcc">By Occasion <i
+                                class="fa-solid fa-chevron-down"></i></button>
+                        <div class="mm-sub-body" id="mmOcc">
+                            {% for oc in nav_occasions %}
+                            <a href="{% url 'user_shop' %}?occasion={{ oc.id }}">{{ oc.name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mm-sub">
+                        <button type="button" class="mm-sub-btn" data-target="mmPrice">By Price <i
+                                class="fa-solid fa-chevron-down"></i></button>
+                        <div class="mm-sub-body" id="mmPrice">
+                            <a href="{% url 'user_shop' %}?price=under-2000">Under &#8377;2,000</a>
+                            <a href="{% url 'user_shop' %}?price=under-5000">Under &#8377;5,000</a>
+                            <a href="{% url 'user_shop' %}?price=under-10000">Under &#8377;10,000</a>
+                            <a href="{% url 'user_shop' %}?price=under-15000">Under &#8377;15,000</a>
+                            <a href="{% url 'user_shop' %}?price=8000-plus">Premium Collection</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'user_landing' %}#about">About Us</a>
+            {% if nav_user %}
+            <a href="{% url 'user_profile' %}">My Profile</a>
+            <a href="{% url 'user_bookings' %}">My Rentals</a>
+            <a href="{% url 'user_wishlist' %}">Wishlist</a>
+            <a href="{% url 'user_cart' %}">Cart</a>
+            <a href="{% url 'user_logout' %}" class="mm-cta">Logout — {{ nav_user.username|default:"" }}</a>
+            {% else %}
+            <a href="{% url 'user_login' %}" class="mm-cta">Sign In</a>
+            <a href="{% url 'user_register' %}" class="mm-cta mm-cta-gold">Create Account</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+<script src="{% static 'js/mega-menu.js' %}"></script>

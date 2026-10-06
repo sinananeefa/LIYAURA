@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIYAURA &middot; Luxury Wedding Fashion Rentals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/liyaura.css' %}">
+</head>
+<body>
+    <section class="splash-page">
+        <div class="splash-bg" style="background-image:url('{% static 'images/landing-bg.jpg' %}');"></div>
+        <div class="splash-inner">
+            <h1 class="splash-brand">LIYAURA</h1>
+            <p class="splash-tag">Luxury Wedding Fashion, On Rental</p>
+            <a href="{% url 'user_landing' %}" class="splash-btn">Enter Collection <i class="fa-solid fa-arrow-right-long"></i></a>
+            <span class="splash-scroll">scroll &middot; dream &middot; dress</span>
+        </div>
+    </section>
+</body>
+</html>

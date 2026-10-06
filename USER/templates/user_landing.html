@@ -1,0 +1,513 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIYAURA | Luxury Wedding Fashion Rentals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/liyaura.css' %}">
+</head>
+
+<body class="user-theme">
+    {% include "_navbar.html" %}
+    {% include "_flash.html" %}
+
+    <!-- ===== HERO SLIDER ===== -->
+    <section class="hero" id="top">
+        <div class="hero-slides">
+            <!-- Slide 1: Bride + Groom together -->
+            <div class="hero-slide active">
+                <div class="hero-bg hero-bg-couple"
+                    style="background-image:url('{% static 'images/landing-bg.jpg' %}')"></div>
+                <div class="hero-overlay"></div>
+                <div class="container hero-content">
+                    <p class="hero-label">LIYAURA WEDDING COLLECTION</p>
+                    <h1 class="hero-title">Rent Your Dream.<br><i>Wear Your Moment.</i></h1>
+                    <p class="hero-sub">Discover premium wedding outfits for brides and grooms, curated for every
+                        unforgettable celebration.</p>
+                    <div class="hero-cta">
+                        <a href="{% url 'user_shop' %}?gender=bride" class="btn btn-gold"><i
+                                class="fa-solid fa-arrow-right-long"></i> EXPLORE BRIDE</a>
+                        <a href="{% url 'user_shop' %}?gender=groom" class="btn btn-light-outline"><i
+                                class="fa-solid fa-arrow-right-long"></i> EXPLORE GROOM</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Slide 2: Groom Edit -->
+            <div class="hero-slide">
+                <div class="hero-bg hero-bg-groom" style="background-image:url('{% static 'images/groom.png' %}')">
+                </div>
+                <div class="hero-overlay"></div>
+                <div class="container hero-content">
+                    <p class="hero-label">LIYAURA WEDDING COLLECTION</p>
+                    <h1 class="hero-title">The Groom&rsquo;s Edit.<br><i>Royal Looks, Effortless Rentals.</i></h1>
+                    <p class="hero-sub">Sherwanis, designer suits, tuxedos and kurtas — tailored for the man of the
+                        moment.</p>
+                    <div class="hero-cta">
+                        <a href="{% url 'user_shop' %}?gender=groom" class="btn btn-gold"><i
+                                class="fa-solid fa-arrow-right-long"></i> EXPLORE GROOM</a>
+                        <a href="{% url 'user_shop' %}" class="btn btn-light-outline"><i
+                                class="fa-solid fa-arrow-right-long"></i> SHOP ALL</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Slide 3: Bride Edit -->
+            <div class="hero-slide">
+                <div class="hero-bg hero-bg-bride" style="background-image:url('{% static 'images/bride.png' %}')">
+                </div>
+                <div class="hero-overlay"></div>
+                <div class="container hero-content">
+                    <p class="hero-label">LIYAURA WEDDING COLLECTION</p>
+                    <h1 class="hero-title">The Bride&rsquo;s Edit.<br><i>Celebrate in Timeless Elegance.</i></h1>
+                    <p class="hero-sub">Lehengas, sarees, gowns and more — designed for the moments you'll remember
+                        forever.</p>
+                    <div class="hero-cta">
+                        <a href="{% url 'user_shop' %}?gender=bride" class="btn btn-gold"><i
+                                class="fa-solid fa-arrow-right-long"></i> EXPLORE BRIDE</a>
+                        <a href="{% url 'user_shop' %}" class="btn btn-light-outline"><i
+                                class="fa-solid fa-arrow-right-long"></i> SHOP ALL</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container hero-nav">
+            <div class="hero-dots">
+                <button class="hero-dot active" type="button" aria-label="Slide 1"></button>
+                <button class="hero-dot" type="button" aria-label="Slide 2"></button>
+                <button class="hero-dot" type="button" aria-label="Slide 3"></button>
+            </div>
+            <div class="hero-scroll"><span>Scroll</span><span class="chev"></span></div>
+        </div>
+    </section>
+
+    <!-- ===== BRIDE & GROOM ===== -->
+    <section class="section">
+        <div class="container">
+            <div class="section-head reveal">
+                <p class="eyebrow">Curated For You</p>
+                <h2 class="section-title">Find Your <i>Perfect Look</i></h2>
+                <p class="section-sub">Two edits. One unforgettable celebration.</p>
+            </div>
+            <div class="split-grid">
+                <a class="collection-card reveal" href="{% url 'user_shop' %}?gender=bride">
+                    <img src="{% static 'images/bride-vertical.png' %}" alt="Bride collection" loading="lazy">
+                    <div class="cc-overlay"></div>
+                    <div class="cc-body">
+                        <p class="cc-kicker">The Bride Edit</p>
+                        <h3 class="cc-title">Bride</h3>
+                        <p class="cc-sub">Discover elegant bridal looks.</p>
+                        <span class="cc-btn">Explore Bride <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </a>
+                <a class="collection-card reveal" href="{% url 'user_shop' %}?gender=groom">
+                    <img src="{% static 'images/groom-vertical.png' %}" alt="Groom collection" loading="lazy">
+                    <div class="cc-overlay"></div>
+                    <div class="cc-body">
+                        <p class="cc-kicker">The Groom Edit</p>
+                        <h3 class="cc-title">Groom</h3>
+                        <p class="cc-sub">Discover royal groom looks.</p>
+                        <span class="cc-btn">Explore Groom <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SHOP BY OCCASION ===== -->
+    <section class="section tint occasion-showcase-section" id="occasions">
+        <div class="container">
+            <div class="section-head reveal">
+                <p class="eyebrow">Curated Wedding Celebrations</p>
+                <h2 class="section-title">Shop By <i>Occasion</i></h2>
+                <p class="section-sub">Immerse in couture specifically designed for each cherished ceremonial moment.
+                </p>
+            </div>
+
+            <div class="occ-showcase reveal">
+                <!-- Stage: Featured Large Active Image & Text -->
+                <div class="occ-stage">
+                    {% for occasion in occasions %}
+                    <div class="occ-feature-slide {% if forloop.first %}active{% endif %}"
+                        id="occ-slide-{{ occasion.id }}" data-id="{{ occasion.id }}">
+                        <div class="occ-stage-img" style="background-image: url('{{ occasion.image }}');">
+                            <div class="occ-stage-overlay"></div>
+                        </div>
+                        <div class="occ-stage-info">
+                            <span class="occ-stage-num">0{{ forloop.counter }} &middot; OCCASION CURATION</span>
+                            <h3 class="occ-stage-title">{{ occasion.name }}</h3>
+                            <p class="occ-stage-desc">
+                                {% if 'Haldi' in occasion.name %}Radiant mustard &amp; turmeric yellows with artisanal
+                                floral accents for joyous morning rituals.
+                                {% elif 'Mehendi' in occasion.name %}Lush mint, emerald, and sage green silhouettes
+                                adorned with intricate resham embroidery.
+                                {% elif 'Muhurtham' in occasion.name %}Pure Kanchipuram silk sarees &amp; royal gold
+                                zari veshtis crafted for sacred auspicious vows.
+                                {% elif 'Nikah' in occasion.name %}Regal blush peach, ivory and antique gold ghararas
+                                &amp; sherwanis for timeless royal grace.
+                                {% elif 'Church' in occasion.name %}Sculpted white bridal gowns and tailored black
+                                tuxedos with cathedral sophistication.
+                                {% elif 'Reception' in occasion.name %}Grand champagne ballroom couture and midnight
+                                velvet tuxedos for the grand evening gala.
+                                {% elif 'Cocktail' in occasion.name %}Modern metallic champagne gowns and sharp tailored
+                                bandhgalas for twilight celebrations.
+                                {% elif 'Pre-Wedding' in occasion.name %}Breathtaking organza ensembles and bespoke
+                                blazers designed for unforgettable couple portraits.
+                                {% elif 'Engagement' in occasion.name %}Romantic pastels and delicate crystal
+                                embellishments to celebrate your new beginning.
+                                {% else %}Refined festive elegance for family celebrations and close ceremonies.{% endif %}
+                            </p>
+                            <a href="{% url 'user_occasion' occasion.id %}" class="btn btn-gold occ-stage-btn">
+                                <span>EXPLORE {{ occasion.name|upper }} COLLECTION</span>
+                                <i class="fa-solid fa-arrow-right-long"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <p>No occasions available yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Rail: Horizontal Interactive Thumbnails -->
+                <div class="occ-rail-wrap">
+                    <div class="occ-rail-header">
+                        <span class="occ-rail-label">SELECT CELEBRATION</span>
+                        <div class="occ-rail-nav">
+                            <button type="button" class="occ-nav-btn prev" id="occRailPrev"
+                                aria-label="Previous occasion"><i class="fa-solid fa-arrow-left"></i></button>
+                            <button type="button" class="occ-nav-btn next" id="occRailNext"
+                                aria-label="Next occasion"><i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="occ-rail" id="occRail">
+                        {% for occasion in occasions %}
+                        <div class="occ-tab {% if forloop.first %}active{% endif %}"
+                            data-target="occ-slide-{{ occasion.id }}" data-id="{{ occasion.id }}" role="button"
+                            tabindex="0">
+                            <div class="occ-tab-thumb">
+                                {% if occasion.image %}<img src="{{ occasion.image }}" alt="{{ occasion.name }}"
+                                    loading="lazy">{% endif %}
+                                <div class="occ-tab-glow"></div>
+                            </div>
+                            <div class="occ-tab-text">
+                                <span class="occ-tab-index">0{{ forloop.counter }}</span>
+                                <h4 class="occ-tab-name">{{ occasion.name }}</h4>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== BRIDE EDIT ===== -->
+    <section class="section" id="bride-edit">
+        <div class="container">
+            <div class="section-head reveal">
+                <p class="eyebrow">The Bride Edit</p>
+                <h2 class="section-title">The Bride <i>Edit</i></h2>
+                <p class="section-sub">Designed for the moments you'll remember forever.</p>
+            </div>
+            <div class="product-grid">
+                {% for product in bride_edit %}
+                {% include '_product_card.html' with product=product %}
+                {% empty %}
+                <div class="empty-state">
+                    <p>No bride outfits available yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="section-cta reveal">
+                <a href="{% url 'user_shop' %}?gender=bride" class="btn btn-dark">View All Bridal Outfits <i
+                        class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== GROOM EDIT ===== -->
+    <section class="section tint" id="groom-edit">
+        <div class="container">
+            <div class="section-head reveal">
+                <p class="eyebrow">The Groom Edit</p>
+                <h2 class="section-title">The Groom <i>Edit</i></h2>
+                <p class="section-sub">Tailored for the man of the moment.</p>
+            </div>
+            <div class="product-grid">
+                {% for product in groom_edit %}
+                {% include '_product_card.html' with product=product %}
+                {% empty %}
+                <div class="empty-state">
+                    <p>No groom outfits available yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="section-cta reveal">
+                <a href="{% url 'user_shop' %}?gender=groom" class="btn btn-dark">View All Groom Outfits <i
+                        class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FEATURED COLLECTIONS ===== -->
+    <section class="section" id="collections">
+        <div class="container">
+            <div class="section-head reveal">
+                <p class="eyebrow">Curated For You</p>
+                <h2 class="section-title">Featured <i>Collections</i></h2>
+                <p class="section-sub">Hand-picked curation from India's finest bridal couture designers.</p>
+            </div>
+            <div class="featured-grid">
+                <a class="featured-card reveal" href="{% url 'user_shop' %}?category=Sherwani">
+                    <div class="fc-bg" style="background-image:url('{% static 'images/groom-vertical.png' %}');"></div>
+                    <div class="fc-overlay"></div>
+                    <div class="fc-content">
+                        <span class="fc-tag">Groom Royalty</span>
+                        <h3>Royal Sherwanis</h3>
+                        <p>Opulent brocades &amp; zardozi craftsmanship.</p>
+                        <span class="fc-link">Explore Edit <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </a>
+                <a class="featured-card reveal" href="{% url 'user_shop' %}?category=Lehenga">
+                    <div class="fc-bg" style="background-image:url('{% static 'images/bride-vertical.png' %}');"></div>
+                    <div class="fc-overlay"></div>
+                    <div class="fc-content">
+                        <span class="fc-tag">Bridal Couture</span>
+                        <h3>Grand Bridal Lehengas</h3>
+                        <p>Intricate embroidery &amp; timeless silhouettes.</p>
+                        <span class="fc-link">Explore Edit <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </a>
+                <a class="featured-card reveal" href="{% url 'user_shop' %}?category=Gown">
+                    <div class="fc-bg" style="background-image:url('{% static 'images/cocktail_party.jpg' %}');"></div>
+                    <div class="fc-overlay"></div>
+                    <div class="fc-content">
+                        <span class="fc-tag">Evening Gala</span>
+                        <h3>Reception &amp; Gowns</h3>
+                        <p>Modern glamour for cocktail nights &amp; receptions.</p>
+                        <span class="fc-link">Explore Edit <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== TRENDING CAROUSEL ===== -->
+    <section class="section tint" id="trending">
+        <div class="container">
+            <div class="section-head reveal"
+                style="display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:20px;">
+                <div>
+                    <p class="eyebrow">Most Loved This Season</p>
+                    <h2 class="section-title">Trending <i>Rentals</i></h2>
+                </div>
+                <div class="carousel-nav-arrows">
+                    <button type="button" class="btn-arrow" data-carousel-prev="trendingTrack" aria-label="Previous"><i
+                            class="fa-solid fa-arrow-left"></i></button>
+                    <button type="button" class="btn-arrow" data-carousel-next="trendingTrack" aria-label="Next"><i
+                            class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+            <div class="trending-track" id="trendingTrack">
+                {% for product in trending_products %}
+                <div class="trending-item">
+                    {% include '_product_card.html' with product=product %}
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <p>No trending products available yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== HOW LIYAURA WORKS ===== -->
+    <section class="section deep how-works-section" id="how">
+        <div class="container">
+            <div class="section-head reveal">
+                <p class="eyebrow">Effortless Luxury</p>
+                <h2 class="section-title">Your Perfect Outfit, <i>Made Easy.</i></h2>
+                <p class="section-sub">A seamless four-step concierge experience from runway curation to your doorstep.
+                </p>
+            </div>
+            <div class="how-flow-wrap reveal">
+                <div class="how-progress-line" id="howProgressLine">
+                    <div class="how-progress-fill" id="howProgressFill"></div>
+                </div>
+                <div class="steps-grid">
+                    <div class="step-card reveal" data-step="1">
+                        <div class="step-badge"><span class="step-num">01</span></div>
+                        <div class="step-icon-wrap"><i class="fa-solid fa-compass step-icon"></i></div>
+                        <h3>Choose Your Look</h3>
+                        <p>Explore curated bridal lehengas, royal sherwanis, sarees, and couture for every occasion.</p>
+                    </div>
+                    <div class="step-card reveal" data-step="2">
+                        <div class="step-badge"><span class="step-num">02</span></div>
+                        <div class="step-icon-wrap"><i class="fa-solid fa-ruler-combined step-icon"></i></div>
+                        <h3>Select Your Size &amp; Dates</h3>
+                        <p>Choose your size and select your exact event rental window with real-time availability.</p>
+                    </div>
+                    <div class="step-card reveal" data-step="3">
+                        <div class="step-badge"><span class="step-num">03</span></div>
+                        <div class="step-icon-wrap"><i class="fa-solid fa-calendar-check step-icon"></i></div>
+                        <h3>Book Your Outfit</h3>
+                        <p>Complete your booking securely with verified delivery scheduled prior to your celebration.
+                        </p>
+                    </div>
+                    <div class="step-card reveal" data-step="4">
+                        <div class="step-badge"><span class="step-num">04</span></div>
+                        <div class="step-icon-wrap"><i class="fa-solid fa-shirt step-icon"></i></div>
+                        <h3>Wear &amp; Return</h3>
+                        <p>Shine effortlessly at your celebration. When done, pack in the provided bag for easy pickup.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== WHY CHOOSE LIYAURA ===== -->
+    <section class="section">
+        <div class="container">
+            <div class="section-head reveal">
+                <p class="eyebrow">The LIYAURA Promise</p>
+                <h2 class="section-title">Why Choose <i>LIYAURA</i></h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon"><i class="fa-regular fa-gem"></i></div>
+                    <div>
+                        <h3>Premium Quality</h3>
+                        <p>Carefully selected wedding outfits.</p>
+                    </div>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon"><i class="fa-solid fa-spray-can-sparkles"></i></div>
+                    <div>
+                        <h3>Professionally Cleaned</h3>
+                        <p>Every outfit is cleaned and prepared before rental.</p>
+                    </div>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon"><i class="fa-regular fa-calendar-check"></i></div>
+                    <div>
+                        <h3>Easy Rental</h3>
+                        <p>Simple online booking process.</p>
+                    </div>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon"><i class="fa-regular fa-arrows-up-down-left-right"></i></div>
+                    <div>
+                        <h3>Multiple Sizes</h3>
+                        <p>Find the perfect fit.</p>
+                    </div>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon"><i class="fa-solid fa-lock"></i></div>
+                    <div>
+                        <h3>Secure Payment</h3>
+                        <p>Safe and secure checkout.</p>
+                    </div>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                    <div>
+                        <h3>Reliable Delivery</h3>
+                        <p>Convenient delivery and return.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== TESTIMONIALS ===== -->
+    <section class="section tint" id="testimonials">
+        <div class="container">
+            <div class="section-head reveal">
+                <p class="eyebrow">Real Experiences</p>
+                <h2 class="section-title">Loved By <i>Our Couples</i></h2>
+                <p class="section-sub">Read stories of brides and grooms who rented their dream wedding looks with
+                    LIYAURA.</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card reveal">
+                    <div class="tc-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                            class="fa-solid fa-star"></i></div>
+                    <p class="tc-quote">&ldquo;LIYAURA made finding my reception gown completely effortless. The design
+                        was pristine, fit perfectly, and felt like pure couture.&rdquo;</p>
+                    <div class="tc-author">
+                        <div class="tc-info">
+                            <h4>Ananya R.</h4>
+                            <span>Bride</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal">
+                    <div class="tc-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                            class="fa-solid fa-star"></i></div>
+                    <p class="tc-quote">&ldquo;I was skeptical about renting a sherwani, but the quality and
+                        professional cleaning exceeded my expectations. Elegant, royal and extremely convenient.&rdquo;
+                    </p>
+                    <div class="tc-author">
+                        <div class="tc-info">
+                            <h4>Aditya K.</h4>
+                            <span>Groom</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal">
+                    <div class="tc-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                            class="fa-solid fa-star"></i></div>
+                    <p class="tc-quote">&ldquo;The date-based availability was 100% reliable. I reserved my outfit
+                        months in advance and it was delivered exactly 2 days before my big day.&rdquo;</p>
+                    <div class="tc-author">
+                        <div class="tc-info">
+                            <h4>Meera S.</h4>
+                            <span>Bride</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ABOUT ===== -->
+    <section class="section tint" id="about">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6 reveal">
+                    <p class="eyebrow">Our Story</p>
+                    <h2 class="section-title left">Wear the Dream. <i>Own the Moment.</i></h2>
+                    <p class="section-sub mb-4">LIYAURA is an Indian wedding fashion rental platform built for brides
+                        and grooms who believe that grandeur shouldn't be a one-time purchase.</p>
+                    <p class="section-sub mb-4">From hand-finished lehengas to regal sherwanis, every outfit is curated,
+                        professionally cleaned and delivered to your doorstep — so you can celebrate in couture without
+                        the cost.</p>
+                    <a href="{% url 'user_shop' %}" class="btn btn-gold">Explore Collections</a>
+                </div>
+                <div class="col-lg-6 reveal" id="story">
+                    <div class="row g-4">
+                        <div class="col-6"><img class="w-100 rounded-4 shadow-sm"
+                                src="{% static 'images/bride-vertical.png' %}" alt="LIYAURA bride" loading="lazy"></div>
+                        <div class="col-6 mt-5"><img class="w-100 rounded-4 shadow-sm"
+                                src="{% static 'images/groom-vertical.png' %}" alt="LIYAURA groom" loading="lazy"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include "_footer.html" %}
+    <script src="{% static 'js/browse.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

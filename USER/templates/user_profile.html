@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | LIYAURA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/liyaura.css' %}">
+</head>
+<body class="user-theme">
+{% include "_navbar.html" %}
+{% include "_flash.html" %}
+
+<section class="profile-page">
+    <div class="container">
+        <header class="page-hero" style="background:transparent;border:0;padding:0 0 34px;">
+            <p class="eyebrow">LIYAURA Account</p>
+            <h1>{% if edit_mode %}Edit <i class="gold">Profile</i>{% else %}My <i class="gold">Profile</i>{% endif %}</h1>
+        </header>
+
+        {% if edit_mode %}
+        <!-- ===== EDIT PROFILE ===== -->
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-9">
+                <div class="checkout-section">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <h3>Personal Details</h3>
+                        <p class="cs-sub">Update your account information.</p>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label" for="username">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" maxlength="150" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="email">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="phone">Phone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone }}" maxlength="15" required>
+                            </div>
+                        </div>
+                        <h3>Change Password <small class="text-muted" style="font-family:var(--font-body);font-size:12px;">(optional)</small></h3>
+                        <p class="cs-sub">Leave blank to keep your current password.</p>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label" for="current_password">Current Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="current_password" name="current_password" placeholder="Enter current password">
+                                    <button class="btn btn-outline pass-toggle" type="button" data-target="current_password">Show</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="new_password">New Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="new_password" name="new_password" placeholder="Min 8 characters" minlength="8">
+                                    <button class="btn btn-outline pass-toggle" type="button" data-target="new_password">Show</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-gold">Save Changes</button>
+                            <a href="{% url 'user_profile' %}" class="btn btn-outline">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- ===== PROFILE DASHBOARD ===== -->
+        <div class="profile-layout">
+            <aside class="profile-sidebar">
+                <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+                <p class="ps-name">{{ user.username }}</p>
+                <p class="ps-mail">{{ user.email }}</p>
+                <nav class="ps-menu">
+                    <a href="{% url 'user_profile' %}" class="active"><i class="fa-regular fa-user"></i> My Profile</a>
+                    <a href="{% url 'user_bookings' %}"><i class="fa-regular fa-calendar-check"></i> My Rentals</a>
+                    <a href="{% url 'user_wishlist' %}"><i class="fa-regular fa-heart"></i> Wishlist</a>
+                    <a href="{% url 'checkout' %}"><i class="fa-solid fa-location-dot"></i> Addresses</a>
+                    <a href="#"><i class="fa-regular fa-credit-card"></i> Payment Methods</a>
+                    <a href="{% url 'profile_edit' %}"><i class="fa-solid fa-pen"></i> Edit Profile</a>
+                    <a href="{% url 'user_logout' %}" class="ps-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+                </nav>
+            </aside>
+
+            <div>
+                <div class="stat-grid">
+                    <a href="{% url 'user_wishlist' %}" class="stat-card reveal">
+                        <div class="st-icon"><i class="fa-regular fa-heart"></i></div>
+                        <div class="st-num">{{ wishlist_count }}</div>
+                        <div class="st-label">Wishlist</div>
+                    </a>
+                    <a href="{% url 'user_cart' %}" class="stat-card reveal">
+                        <div class="st-icon"><i class="fa-regular fa-bag-shopping"></i></div>
+                        <div class="st-num">{{ cart_count }}</div>
+                        <div class="st-label">Cart Items</div>
+                    </a>
+                    <a href="{% url 'user_bookings' %}" class="stat-card reveal">
+                        <div class="st-icon"><i class="fa-regular fa-calendar-check"></i></div>
+                        <div class="st-num">{{ bookings|length }}</div>
+                        <div class="st-label">Rentals</div>
+                    </a>
+                </div>
+
+                <div class="profile-info-card reveal">
+                    <h5>Personal Information</h5>
+                    <div class="profile-row"><span class="row-label">Username</span><span class="row-value">{{ user.username }}</span></div>
+                    <div class="profile-row"><span class="row-label">Email</span><span class="row-value">{{ user.email }}</span></div>
+                    <div class="profile-row"><span class="row-label">Phone</span><span class="row-value">{{ user.phone }}</span></div>
+                </div>
+
+                <div class="mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 style="font-size:22px;">Recent <i class="gold">Rentals</i></h3>
+                        <a href="{% url 'user_bookings' %}" class="btn btn-outline btn-sm">View All</a>
+                    </div>
+                    {% if bookings %}
+                    {% for booking in bookings|slice:":3" %}
+                    <div class="booking-card" style="padding:16px;">
+                        <div class="booking-top">
+                            <div class="bk-image" style="width:74px;height:90px;">
+                                {% if booking.product.image_1 %}<img src="{{ booking.product.image_1 }}" alt="" loading="lazy">{% endif %}
+                            </div>
+                            <div class="bk-body">
+                                <p class="bk-id">#LY-{{ booking.id }}</p>
+                                <h3 class="bk-name" style="font-size:16px;"><a href="{% url 'user_product_detail' booking.product.id %}">{{ booking.product.name }}</a></h3>
+                                <div class="bk-meta">
+                                    <span>{{ booking.rental_start|date:"d M Y"|default:"Scheduled" }} &middot; {{ booking.rental_days }} day{% if booking.rental_days > 1 %}s{% endif %}</span>
+                                </div>
+                            </div>
+                            <div class="bk-right">
+                                <span class="bk-amount" style="font-size:16px;">&#8377;{{ booking.total_price }}</span>
+                                <span class="status-pill {{ booking.status }}"><i class="fa-solid fa-circle"></i> {{ booking.get_status_display }}</span>
+                                {% if booking.status == "pending" or booking.status == "confirmed" %}
+                                <a href="{% url 'booking_cancel' booking.id %}" class="link-btn danger mt-2 d-block text-end"
+                                   style="font-size:12.5px; color:#d9534f; text-decoration:none; font-weight:500;"
+                                   onclick="return confirm('Are you sure you want to cancel booking #LY-{{ booking.id }} for {{ booking.product.name }}?');">
+                                    <i class="fa-regular fa-circle-xmark"></i> Cancel
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="empty-state py-4"><p>No rentals yet. Start exploring our collection.</p></div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <h3 style="font-size:22px;margin-bottom:18px;">Saved <i class="gold">Addresses</i></h3>
+                    {% if addresses %}
+                    {% for address in addresses %}
+                    <div class="addr-card" style="cursor:default;">
+                        <i class="fa-solid fa-location-dot" style="color:var(--gold-dark);margin-top:4px;"></i>
+                        <div>
+                            <strong>{{ address.name }}</strong>{% if address.is_default %}<span class="default-badge">Default</span>{% endif %}
+                            <span class="addr-phone">{{ address.phone }}</span>
+                            <p>{{ address.house }}{% if address.street %}, {{ address.street }}{% endif %}, {{ address.city }}, {{ address.state }} - {{ address.pin }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="empty-state py-4"><p>No saved addresses.</p></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% include "_footer.html" %}
+<script src="{% static 'js/browse.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.querySelectorAll('.pass-toggle').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var input = document.getElementById(btn.dataset.target);
+            var isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            btn.textContent = isPassword ? 'Hide' : 'Show';
+        });
+    });
+</script>
+</body>
+</html>

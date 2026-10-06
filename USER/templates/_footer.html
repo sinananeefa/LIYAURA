@@ -1,0 +1,49 @@
+{% load static %}
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a class="footer-logo-link" href="{% url 'user_landing' %}">
+                    <img src="{% static 'images/liyaura-logo.png' %}" alt="LIYAURA Emblem" class="footer-logo-img">
+                    <span class="footer-logo">LIYAURA</span>
+                </a>
+                <p>Luxury wedding dress rentals.</p>
+                <p class="ft-tagline">&ldquo;Rent Your Dream. Wear Your Moment.&rdquo;</p>
+                <div class="social-row">
+                    <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Pinterest"><i class="fa-brands fa-pinterest-p"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Shop</h4>
+                <ul>
+                    <li><a href="{% url 'user_shop' %}?gender=bride">Bride</a></li>
+                    <li><a href="{% url 'user_shop' %}?gender=groom">Groom</a></li>
+                    <li><a href="{% url 'user_shop' %}">Collections</a></li>
+                    <li><a href="{% url 'user_landing' %}#occasions">Occasions</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Customer Care</h4>
+                <ul>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Rental Policy</a></li>
+                    <li><a href="#">Return Policy</a></li>
+                    <li><a href="#">Size Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="{% url 'user_landing' %}#about">About LIYAURA</a></li>
+                    <li><a href="{% url 'user_landing' %}#story">Our Story</a></li>
+                    <li><a href="#">Terms &amp; Conditions</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">&copy; 2026 LIYAURA. All Rights Reserved.</div>
+    </div>
+</footer>

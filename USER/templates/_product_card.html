@@ -1,0 +1,41 @@
+{% load static %}
+<div class="product-card">
+    <a href="{% url 'user_product_detail' product.id %}" class="pc-link">
+        <div class="pc-media">
+            {% if product.image_1 %}<img src="{{ product.image_1 }}" alt="{{ product.name }}" loading="lazy">{% endif %}
+            {% if product.discount_pct > 0 %}<span class="pc-badge">{{ product.discount_pct }}% OFF</span>
+            {% elif forloop.counter <= 3 %}<span class="pc-badge hot">Trending</span>
+                {% elif not product.quantity %}<span class="pc-badge out">Out of Stock</span>
+                {% else %}<span class="pc-badge av">Available</span>{% endif %}
+
+                <button type="button" class="pc-wish {% if product.wishlisted %}saved{% endif %}"
+                    data-url="{% url 'add_to_wishlist' product.id %}?next={{ request.path|urlencode }}"
+                    aria-label="Toggle wishlist">
+                    <i class="fa-{% if product.wishlisted %}solid{% else %}regular{% endif %} fa-heart"></i>
+                </button>
+                <div class="pc-quick">
+                    <span class="btn btn-gold btn-sm">Rent Now</span>
+                </div>
+        </div>
+    </a>
+    <div class="pc-body">
+        <p class="pc-meta-text">{{ product.category_2.gender_type|title }} &middot; {{ product.category_2.name }}
+            &middot; {{ product.category_1.name }}</p>
+        <h3 class="pc-name"><a href="{% url 'user_product_detail' product.id %}">{{ product.name }}</a></h3>
+        <div class="pc-rating">
+            {% if product.rating > 0 %}
+            <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            <span class="num">{{ product.rating }}</span>
+            <span class="cnt">({{ product.feedback_count|default:0 }} reviews)</span>
+            {% else %}
+            <span class="stars" style="color:var(--line); font-size:11px;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            <span class="cnt" style="color:var(--ink-soft); font-size:11.5px;">(0 reviews)</span>
+            {% endif %}
+        </div>
+        <div class="pc-price">
+            <span class="price-rent">&#8377;{{ product.offer_price }} <small>/ day</small></span>
+            {% if product.actual_price > product.offer_price %}<span class="price-strike">&#8377;{{ product.actual_price }}</span>{% endif %}
+            {% if product.discount_pct > 0 %}<span class="price-disc">{{ product.discount_pct }}% off</span>{% endif %}
+        </div>
+    </div>
+</div>
